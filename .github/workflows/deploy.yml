@@ -38,13 +38,6 @@ jobs:
           cache: 'npm'
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        with:
-          # Automatically inject basePath in your Next.js config file and disable
-          # server side image optimization (WebP) to support Static Site Replacement.
-          #
-          # You can also manually set this in your next.config.js file, but this
-          # will automatically set it for you if it's not already set.
-          static_site_generator: next
       - name: Install dependencies
         run: npm install
       - name: Build with Next.js
