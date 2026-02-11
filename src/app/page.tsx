@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectContext";
 import { useState, useEffect } from "react";
+import { PasscodeModal } from "@/components/feature/PasscodeModal";
 
 export default function Home() {
   const {
@@ -30,6 +31,10 @@ export default function Home() {
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const [tempBudget, setTempBudget] = useState(totalAllocatedBudget.toString());
 
+  // Passcode states
+  const [isPasscodeForBudgetOpen, setIsPasscodeForBudgetOpen] = useState(false);
+  const [isPasscodeForCategoriesOpen, setIsPasscodeForCategoriesOpen] = useState(false);
+
   // Update temp budget when the agency's total budget changes (e.g., after switching agencies)
   useEffect(() => {
     setTempBudget(totalAllocatedBudget.toString());
@@ -46,6 +51,15 @@ export default function Home() {
       updateTotalAllocatedBudget(amount);
       setIsEditingBudget(false);
     }
+  };
+
+  const handleBudgetEditClick = () => {
+    setIsPasscodeForBudgetOpen(true);
+  };
+
+  const handleBudgetEditConfirm = () => {
+    setTempBudget(totalAllocatedBudget.toString());
+    setIsEditingBudget(true);
   };
 
   const sortedProjects = [...projects].sort((a, b) => {
@@ -117,7 +131,7 @@ export default function Home() {
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
               ล้างข้อมูลทั้งหมด
             </Button>
-            <Button variant="outline" onClick={() => setIsManageCategoriesOpen(true)} className="gap-2 border-stone-300 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-bold h-11 px-5">
+            <Button variant="outline" onClick={() => setIsPasscodeForCategoriesOpen(true)} className="gap-2 border-stone-300 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-bold h-11 px-5">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
               จัดการประเภท
             </Button>
@@ -153,7 +167,7 @@ export default function Home() {
               ) : (
                 <div className="flex items-center justify-between group/val">
                   <div className="text-4xl font-black text-stone-900 tracking-tight">฿{totalAllocatedBudget.toLocaleString()}</div>
-                  <Button variant="ghost" size="icon" onClick={() => { setTempBudget(totalAllocatedBudget.toString()); setIsEditingBudget(true); }} className="h-10 w-10 text-stone-300 hover:text-orange-600 hover:bg-orange-50 rounded-full transition-all">
+                  <Button variant="ghost" size="icon" onClick={handleBudgetEditClick} className="h-10 w-10 text-stone-300 hover:text-orange-600 hover:bg-orange-50 rounded-full transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
                   </Button>
                 </div>
@@ -308,53 +322,71 @@ export default function Home() {
         </Card>
 
         {/* Manage Categories Modal */}
-        {isManageCategoriesOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 p-4 backdrop-blur-sm">
-            <Card className="w-full max-w-md relative shadow-2xl border-stone-300">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-3 top-3 text-stone-500 hover:text-stone-800"
-                onClick={() => setIsManageCategoriesOpen(false)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-              </Button>
-              <CardHeader className="bg-stone-100/80 border-b border-stone-200">
-                <CardTitle className="text-xl font-black text-stone-900">จัดการประเภทโครงการ</CardTitle>
-                <CardDescription className="text-stone-600 font-bold">เพิ่มหรือลบประเภทเพื่อใช้ประกอบโครงการ</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <form onSubmit={(e: React.FormEvent) => handleAddCategory(e)} className="flex gap-3">
-                  <Input
-                    className="flex-1 font-bold border-stone-200 focus:border-orange-500"
-                    placeholder="ชื่อประเภทใหม่..."
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                  />
-                  <Button type="submit" className="bg-orange-600 hover:bg-orange-700 text-white font-black shadow-lg shadow-orange-600/20">
-                    เพิ่ม
-                  </Button>
-                </form>
-                <div className="max-h-[320px] overflow-y-auto space-y-2 pr-2">
-                  {categories.map(category => (
-                    <div key={category} className="flex items-center justify-between p-4 rounded-xl bg-stone-100 border border-stone-200 group transition-all hover:bg-white hover:border-orange-200 hover:shadow-md">
-                      <span className="text-sm font-black text-stone-800">{category}</span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-stone-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all"
-                        onClick={() => handleDeleteCategory(category)}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </main>
-    </div>
+        {
+          isManageCategoriesOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 p-4 backdrop-blur-sm">
+              <Card className="w-full max-w-md relative shadow-2xl border-stone-300">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-3 top-3 text-stone-500 hover:text-stone-800"
+                  onClick={() => setIsManageCategoriesOpen(false)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                </Button>
+                <CardHeader className="bg-stone-100/80 border-b border-stone-200">
+                  <CardTitle className="text-xl font-black text-stone-900">จัดการประเภทโครงการ</CardTitle>
+                  <CardDescription className="text-stone-600 font-bold">เพิ่มหรือลบประเภทเพื่อใช้ประกอบโครงการ</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <form onSubmit={(e: React.FormEvent) => handleAddCategory(e)} className="flex gap-3">
+                    <Input
+                      className="flex-1 font-bold border-stone-200 focus:border-orange-500"
+                      placeholder="ชื่อประเภทใหม่..."
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                    />
+                    <Button type="submit" className="bg-orange-600 hover:bg-orange-700 text-white font-black shadow-lg shadow-orange-600/20">
+                      เพิ่ม
+                    </Button>
+                  </form>
+                  <div className="max-h-[320px] overflow-y-auto space-y-2 pr-2">
+                    {categories.map(category => (
+                      <div key={category} className="flex items-center justify-between p-4 rounded-xl bg-stone-100 border border-stone-200 group transition-all hover:bg-white hover:border-orange-200 hover:shadow-md">
+                        <span className="text-sm font-black text-stone-800">{category}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-stone-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all"
+                          onClick={() => handleDeleteCategory(category)}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )
+        }
+
+        <PasscodeModal
+          isOpen={isPasscodeForBudgetOpen}
+          onClose={() => setIsPasscodeForBudgetOpen(false)}
+          onSuccess={handleBudgetEditConfirm}
+          title="ยืนยันการแก้ไขงบ"
+          description="กรุณากรอกรหัสผ่านเพื่อแก้ไขงบประมาณที่ได้รับจัดสรร"
+        />
+
+        <PasscodeModal
+          isOpen={isPasscodeForCategoriesOpen}
+          onClose={() => setIsPasscodeForCategoriesOpen(false)}
+          onSuccess={() => setIsManageCategoriesOpen(true)}
+          title="จัดการประเภท"
+          description="กรุณากรอกรหัสผ่านเพื่อเข้าสู่เมนูจัดการประเภทโครงการ"
+        />
+      </main >
+    </div >
   );
 }

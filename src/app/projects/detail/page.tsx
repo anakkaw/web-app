@@ -4,6 +4,7 @@ import { use, useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { WBS } from "@/components/feature/WBS";
 import { Button } from "@/components/ui/button";
+import { PasscodeModal } from "@/components/feature/PasscodeModal";
 import Link from "next/link";
 import { useProjects, WBSItem } from "@/contexts/ProjectContext";
 import { Input } from "@/components/ui/input";
@@ -34,7 +35,9 @@ function ProjectDetailContent() {
     const [projectCode, setProjectCode] = useState("");
     const [projectOwner, setProjectOwner] = useState("");
     const [projectLocation, setProjectLocation] = useState("");
+
     const [isInitialized, setIsInitialized] = useState(false);
+    const [isPasscodeOpen, setIsPasscodeOpen] = useState(false);
 
     // Initialize WBS items from project data
     useEffect(() => {
@@ -53,7 +56,13 @@ function ProjectDetailContent() {
         return <div>Project not found</div>;
     }
 
-    const handleSave = () => {
+    const handleSaveClick = () => {
+        setIsPasscodeOpen(true);
+    };
+
+    const handleSaveConfirm = () => {
+        if (!project || projectId === null) return;
+
         // Calculate new budget from WBS
         const newBudget = wbsItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
 
@@ -142,7 +151,7 @@ function ProjectDetailContent() {
                         </div>
                     </div>
                     <div className="lg:ml-auto flex gap-3 lg:self-start">
-                        <Button onClick={handleSave} className="h-12 bg-black hover:bg-stone-800 text-white font-black px-10 rounded-2xl shadow-[0_10px_15px_-3px_rgba(28,25,23,0.1)] transition-all active:scale-95">
+                        <Button onClick={handleSaveClick} className="h-12 bg-black hover:bg-stone-800 text-white font-black px-10 rounded-2xl shadow-[0_10px_15px_-3px_rgba(28,25,23,0.1)] transition-all active:scale-95">
                             บันทึกโครงการ
                         </Button>
                     </div>
@@ -152,6 +161,14 @@ function ProjectDetailContent() {
                     <WBS items={wbsItems} onItemsChange={setWbsItems} />
                 </div>
             </main>
+
+            <PasscodeModal
+                isOpen={isPasscodeOpen}
+                onClose={() => setIsPasscodeOpen(false)}
+                onSuccess={handleSaveConfirm}
+                title="ยืนยันการบันทึก"
+                description="กรุณากรอกรหัสผ่านเพื่อยืนยันการบันทึกข้อมูลโครงการนี้"
+            />
         </div>
     );
 }

@@ -11,6 +11,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { PasscodeModal } from "@/components/feature/PasscodeModal";
 
 export function AgencyModal({
     isOpen,
@@ -24,10 +25,21 @@ export function AgencyModal({
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState("");
 
+    // Passcode states
+    const [isPasscodeForAddOpen, setIsPasscodeForAddOpen] = useState(false);
+    const [isPasscodeForDeleteOpen, setIsPasscodeForDeleteOpen] = useState(false);
+    const [agencyToDelete, setAgencyToDelete] = useState<string | null>(null);
+
     if (!isOpen) return null;
 
-    const handleAdd = (e: React.FormEvent) => {
+    const handleAddClick = (e: React.FormEvent) => {
         e.preventDefault();
+        if (newAgencyName.trim()) {
+            setIsPasscodeForAddOpen(true);
+        }
+    };
+
+    const handleAddConfirm = () => {
         if (newAgencyName.trim()) {
             addAgency(newAgencyName.trim());
             setNewAgencyName("");
@@ -39,6 +51,18 @@ export function AgencyModal({
         if (editingName.trim()) {
             updateAgencyName(id, editingName.trim());
             setEditingId(null);
+        }
+    };
+
+    const handleDeleteClick = (id: string) => {
+        setAgencyToDelete(id);
+        setIsPasscodeForDeleteOpen(true);
+    };
+
+    const handleDeleteConfirm = () => {
+        if (agencyToDelete) {
+            deleteAgency(agencyToDelete);
+            setAgencyToDelete(null);
         }
     };
 
@@ -58,7 +82,7 @@ export function AgencyModal({
                     <CardDescription className="text-stone-600 font-bold">สร้างหรือเลือกหน่วยงานเพื่อแยกโครงการและงบประมาณ</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6 pt-6">
-                    <form onSubmit={handleAdd} className="flex gap-3">
+                    <form onSubmit={handleAddClick} className="flex gap-3">
                         <Input
                             className="flex-1 font-bold border-stone-200 focus:border-orange-500"
                             placeholder="ชื่อหน่วยงานใหม่..."
@@ -76,8 +100,8 @@ export function AgencyModal({
                             <div
                                 key={agency.id}
                                 className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${currentAgencyId === agency.id
-                                        ? "bg-orange-50 border-orange-200 shadow-sm"
-                                        : "bg-white border-stone-100 hover:border-orange-100 group"
+                                    ? "bg-orange-50 border-orange-200 shadow-sm"
+                                    : "bg-white border-stone-100 hover:border-orange-100 group"
                                     }`}
                             >
                                 <div className="flex-1 flex items-center gap-3">
@@ -122,7 +146,7 @@ export function AgencyModal({
                                                 variant="ghost"
                                                 size="icon"
                                                 className="h-9 w-9 text-stone-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                                                onClick={() => deleteAgency(agency.id)}
+                                                onClick={() => handleDeleteClick(agency.id)}
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
                                             </Button>
@@ -147,6 +171,25 @@ export function AgencyModal({
                     </div>
                 </CardContent>
             </Card>
-        </div>
+
+            <PasscodeModal
+                isOpen={isPasscodeForAddOpen}
+                onClose={() => setIsPasscodeForAddOpen(false)}
+                onSuccess={handleAddConfirm}
+                title="ยืนยันการเพิ่มหน่วยงาน"
+                description="กรุณากรอกรหัสผ่านเพื่อเพิ่มหน่วยงานใหม่"
+            />
+
+            <PasscodeModal
+                isOpen={isPasscodeForDeleteOpen}
+                onClose={() => {
+                    setIsPasscodeForDeleteOpen(false);
+                    setAgencyToDelete(null);
+                }}
+                onSuccess={handleDeleteConfirm}
+                title="ยืนยันการลบหน่วยงาน"
+                description="การลบหน่วยงานจะทำให้ข้อมูลโครงการทั้งหมดในหน่วยงานนั้นหายไป กรุณากรอกรหัสผ่านเพื่อยืนยัน"
+            />
+        </div >
     );
 }
