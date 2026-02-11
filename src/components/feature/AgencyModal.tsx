@@ -11,7 +11,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { PasscodeModal } from "@/components/feature/PasscodeModal";
 
 export function AgencyModal({
     isOpen,
@@ -20,26 +19,15 @@ export function AgencyModal({
     isOpen: boolean;
     onClose: () => void;
 }) {
-    const { agencies, currentAgencyId, addAgency, switchAgency, deleteAgency, updateAgencyName } = useProjects();
+    const { agencies, currentAgencyId, addAgency, switchAgency, deleteAgency, updateAgencyName, session } = useProjects();
     const [newAgencyName, setNewAgencyName] = useState("");
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState("");
-
-    // Passcode states
-    const [isPasscodeForAddOpen, setIsPasscodeForAddOpen] = useState(false);
-    const [isPasscodeForDeleteOpen, setIsPasscodeForDeleteOpen] = useState(false);
-    const [agencyToDelete, setAgencyToDelete] = useState<string | null>(null);
 
     if (!isOpen) return null;
 
     const handleAddClick = (e: React.FormEvent) => {
         e.preventDefault();
-        if (newAgencyName.trim()) {
-            setIsPasscodeForAddOpen(true);
-        }
-    };
-
-    const handleAddConfirm = () => {
         if (newAgencyName.trim()) {
             addAgency(newAgencyName.trim());
             setNewAgencyName("");
@@ -55,14 +43,12 @@ export function AgencyModal({
     };
 
     const handleDeleteClick = (id: string) => {
-        setAgencyToDelete(id);
-        setIsPasscodeForDeleteOpen(true);
-    };
-
-    const handleDeleteConfirm = () => {
-        if (agencyToDelete) {
-            deleteAgency(agencyToDelete);
-            setAgencyToDelete(null);
+        if (agencies.length <= 1) {
+            alert("ไม่สามารถลบหน่วยงานสุดท้ายได้");
+            return;
+        }
+        if (confirm("คุณต้องการลบหน่วยงานนี้ใช่หรือไม่? ข้อมูลทั้งหมดในหน่วยงานนี้จะหายไป")) {
+            deleteAgency(id);
         }
     };
 
@@ -171,25 +157,6 @@ export function AgencyModal({
                     </div>
                 </CardContent>
             </Card>
-
-            <PasscodeModal
-                isOpen={isPasscodeForAddOpen}
-                onClose={() => setIsPasscodeForAddOpen(false)}
-                onSuccess={handleAddConfirm}
-                title="ยืนยันการเพิ่มหน่วยงาน"
-                description="กรุณากรอกรหัสผ่านเพื่อเพิ่มหน่วยงานใหม่"
-            />
-
-            <PasscodeModal
-                isOpen={isPasscodeForDeleteOpen}
-                onClose={() => {
-                    setIsPasscodeForDeleteOpen(false);
-                    setAgencyToDelete(null);
-                }}
-                onSuccess={handleDeleteConfirm}
-                title="ยืนยันการลบหน่วยงาน"
-                description="การลบหน่วยงานจะทำให้ข้อมูลโครงการทั้งหมดในหน่วยงานนั้นหายไป กรุณากรอกรหัสผ่านเพื่อยืนยัน"
-            />
         </div >
     );
 }

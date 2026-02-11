@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import type { Session } from "@supabase/supabase-js";
 
 export type ProjectStatus = "วางแผน" | "กำลังดำเนินการ" | "เสร็จสิ้น";
 
@@ -53,7 +54,7 @@ interface ProjectContextType {
     switchAgency: (id: string) => void;
     updateAgencyName: (id: string, name: string) => void;
     deleteAgency: (id: string) => void;
-    session: any;
+    session: Session | null;
     syncLocalToCloud: () => Promise<void>;
 }
 
@@ -93,7 +94,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     const [agencies, setAgencies] = useState<Agency[]>([]);
     const [currentAgencyId, setCurrentAgencyId] = useState<string>("");
     const [isLoaded, setIsLoaded] = useState(false);
-    const [session, setSession] = useState<any>(null);
+    const [session, setSession] = useState<Session | null>(null);
 
     // Initial load and Auth subscription
     useEffect(() => {
@@ -180,10 +181,15 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             .single();
 
         if (data && data.data) {
-            // @ts-ignore
-            const { agencies: cloudAgencies, currentAgencyId: cloudCurrentId } = data.data;
-            if (cloudAgencies) setAgencies(cloudAgencies);
-            if (cloudCurrentId) setCurrentAgencyId(cloudCurrentId);
+            // Check if data is valid JSON structure for agencies
+            const cloudData = data.data as { agencies?: Agency[], currentAgencyId?: string };
+            const cloudAgencies = cloudData.agencies;
+            const cloudCurrentId = cloudData.currentAgencyId;
+
+            if (cloudAgencies && Array.isArray(cloudAgencies)) {
+                setAgencies(cloudAgencies);
+                if (cloudCurrentId) setCurrentAgencyId(cloudCurrentId);
+            }
         } else {
             console.log("No cloud data found or error:", error);
             // Optionally: could prompt to upload local data here, but for now just load local
@@ -365,7 +371,6 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             switchAgency,
             updateAgencyName,
             deleteAgency,
-            // @ts-ignore
             session,
             syncLocalToCloud
         }}>

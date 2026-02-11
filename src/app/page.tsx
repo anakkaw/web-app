@@ -13,7 +13,6 @@ import {
 import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectContext";
 import { useState, useEffect } from "react";
-import { PasscodeModal } from "@/components/feature/PasscodeModal";
 
 export default function Home() {
   const {
@@ -24,16 +23,13 @@ export default function Home() {
     deleteCategory,
     totalAllocatedBudget,
     updateTotalAllocatedBudget,
-    clearAllData
+    clearAllData,
+    session
   } = useProjects();
   const [isManageCategoriesOpen, setIsManageCategoriesOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const [tempBudget, setTempBudget] = useState(totalAllocatedBudget.toString());
-
-  // Passcode states
-  const [isPasscodeForBudgetOpen, setIsPasscodeForBudgetOpen] = useState(false);
-  const [isPasscodeForCategoriesOpen, setIsPasscodeForCategoriesOpen] = useState(false);
 
   // Update temp budget when the agency's total budget changes (e.g., after switching agencies)
   useEffect(() => {
@@ -54,7 +50,9 @@ export default function Home() {
   };
 
   const handleBudgetEditClick = () => {
-    setIsPasscodeForBudgetOpen(true);
+    // Check session if we want to enforce login, or just allow it since passcode is removed.
+    // For now, allow it regardless of session for local usability, mirroring the removal of restriction.
+    handleBudgetEditConfirm();
   };
 
   const handleBudgetEditConfirm = () => {
@@ -131,7 +129,11 @@ export default function Home() {
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
               ล้างข้อมูลทั้งหมด
             </Button>
-            <Button variant="outline" onClick={() => setIsPasscodeForCategoriesOpen(true)} className="gap-2 border-stone-300 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-bold h-11 px-5">
+            <Button
+              variant="outline"
+              onClick={() => setIsManageCategoriesOpen(true)}
+              className="gap-2 border-stone-300 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-bold h-11 px-5"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
               จัดการประเภท
             </Button>
@@ -370,22 +372,6 @@ export default function Home() {
             </div>
           )
         }
-
-        <PasscodeModal
-          isOpen={isPasscodeForBudgetOpen}
-          onClose={() => setIsPasscodeForBudgetOpen(false)}
-          onSuccess={handleBudgetEditConfirm}
-          title="ยืนยันการแก้ไขงบ"
-          description="กรุณากรอกรหัสผ่านเพื่อแก้ไขงบประมาณที่ได้รับจัดสรร"
-        />
-
-        <PasscodeModal
-          isOpen={isPasscodeForCategoriesOpen}
-          onClose={() => setIsPasscodeForCategoriesOpen(false)}
-          onSuccess={() => setIsManageCategoriesOpen(true)}
-          title="จัดการประเภท"
-          description="กรุณากรอกรหัสผ่านเพื่อเข้าสู่เมนูจัดการประเภทโครงการ"
-        />
       </main >
     </div >
   );

@@ -4,7 +4,6 @@ import { use, useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { WBS } from "@/components/feature/WBS";
 import { Button } from "@/components/ui/button";
-import { PasscodeModal } from "@/components/feature/PasscodeModal";
 import Link from "next/link";
 import { useProjects, WBSItem } from "@/contexts/ProjectContext";
 import { Input } from "@/components/ui/input";
@@ -24,7 +23,7 @@ function ProjectDetailContent() {
     const searchParams = useSearchParams();
     const paramId = searchParams.get("id");
     const projectId = paramId ? parseInt(paramId) : null;
-    const { projects, updateProject, categories } = useProjects();
+    const { projects, updateProject, categories, session } = useProjects();
 
     const project = projects.find((p) => p.id === projectId);
 
@@ -37,7 +36,6 @@ function ProjectDetailContent() {
     const [projectLocation, setProjectLocation] = useState("");
 
     const [isInitialized, setIsInitialized] = useState(false);
-    const [isPasscodeOpen, setIsPasscodeOpen] = useState(false);
 
     // Initialize WBS items from project data
     useEffect(() => {
@@ -57,10 +55,6 @@ function ProjectDetailContent() {
     }
 
     const handleSaveClick = () => {
-        setIsPasscodeOpen(true);
-    };
-
-    const handleSaveConfirm = () => {
         if (!project || projectId === null) return;
 
         // Calculate new budget from WBS
@@ -161,14 +155,6 @@ function ProjectDetailContent() {
                     <WBS items={wbsItems} onItemsChange={setWbsItems} />
                 </div>
             </main>
-
-            <PasscodeModal
-                isOpen={isPasscodeOpen}
-                onClose={() => setIsPasscodeOpen(false)}
-                onSuccess={handleSaveConfirm}
-                title="ยืนยันการบันทึก"
-                description="กรุณากรอกรหัสผ่านเพื่อยืนยันการบันทึกข้อมูลโครงการนี้"
-            />
         </div>
     );
 }
