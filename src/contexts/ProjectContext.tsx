@@ -53,6 +53,8 @@ interface ProjectContextType {
     switchAgency: (id: string) => void;
     updateAgencyName: (id: string, name: string) => void;
     deleteAgency: (id: string) => void;
+    session: any;
+    syncLocalToCloud: () => Promise<void>;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -91,9 +93,38 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     const [agencies, setAgencies] = useState<Agency[]>([]);
     const [currentAgencyId, setCurrentAgencyId] = useState<string>("");
     const [isLoaded, setIsLoaded] = useState(false);
+    const [session, setSession] = useState<any>(null);
 
-    // Load from local storage on mount
+    // Initial load and Auth subscription
     useEffect(() => {
+        // 1. Check for active session
+        import("@/lib/supabase").then(({ supabase }) => {
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                setSession(session);
+                if (session) {
+                    loadFromSupabase(session.user.id);
+                } else {
+                    loadFromLocalStorage();
+                }
+            });
+
+            const {
+                data: { subscription },
+            } = supabase.auth.onAuthStateChange((_event, session) => {
+                setSession(session);
+                if (session) {
+                    loadFromSupabase(session.user.id);
+                } else {
+                    // Start fresh or load local when logged out
+                    loadFromLocalStorage();
+                }
+            });
+
+            return () => subscription.unsubscribe();
+        });
+    }, []);
+
+    const loadFromLocalStorage = () => {
         const storedAgencies = localStorage.getItem(AGENCIES_STORAGE_KEY);
         const storedCurrentId = localStorage.getItem(CURRENT_AGENCY_ID_KEY);
 
@@ -116,7 +147,6 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             const legacyBudget = localStorage.getItem(LEGACY_BUDGET_KEY);
 
             if (legacyProjects || legacyCategories || legacyBudget) {
-                // Perform migration
                 const initialAgency: Agency = {
                     id: "default-agency",
                     name: "หน่วยงานเริ่มต้น",
@@ -126,13 +156,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
                 };
                 setAgencies([initialAgency]);
                 setCurrentAgencyId(initialAgency.id);
-
-                // Optional: clear legacy keys to prevent re-migration
-                // localStorage.removeItem(LEGACY_PROJECTS_KEY);
-                // localStorage.removeItem(LEGACY_CATEGORIES_KEY);
-                // localStorage.removeItem(LEGACY_BUDGET_KEY);
             } else {
-                // Complete fresh start
                 const initialAgency: Agency = {
                     id: "default-agency",
                     name: "หน่วยงานเริ่มต้น",
@@ -144,17 +168,52 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
                 setCurrentAgencyId(initialAgency.id);
             }
         }
-
         setIsLoaded(true);
-    }, []);
+    };
 
-    // Save to local storage whenever agencies or currentAgencyId changes
-    useEffect(() => {
-        if (isLoaded) {
-            localStorage.setItem(AGENCIES_STORAGE_KEY, JSON.stringify(agencies));
-            localStorage.setItem(CURRENT_AGENCY_ID_KEY, currentAgencyId);
+    const loadFromSupabase = async (userId: string) => {
+        const { supabase } = await import("@/lib/supabase");
+        const { data, error } = await supabase
+            .from("user_data")
+            .select("data")
+            .eq("user_id", userId)
+            .single();
+
+        if (data && data.data) {
+            // @ts-ignore
+            const { agencies: cloudAgencies, currentAgencyId: cloudCurrentId } = data.data;
+            if (cloudAgencies) setAgencies(cloudAgencies);
+            if (cloudCurrentId) setCurrentAgencyId(cloudCurrentId);
+        } else {
+            console.log("No cloud data found or error:", error);
+            // Optionally: could prompt to upload local data here, but for now just load local
+            loadFromLocalStorage();
         }
-    }, [agencies, currentAgencyId, isLoaded]);
+        setIsLoaded(true);
+    };
+
+    // Save data whenever it changes
+    useEffect(() => {
+        if (!isLoaded) return;
+
+        // Always save to local storage as backup/offline cache
+        localStorage.setItem(AGENCIES_STORAGE_KEY, JSON.stringify(agencies));
+        localStorage.setItem(CURRENT_AGENCY_ID_KEY, currentAgencyId);
+
+        // If logged in, save to cloud
+        if (session?.user?.id) {
+            const saveData = async () => {
+                const { supabase } = await import("@/lib/supabase");
+                await supabase.from("user_data").upsert({
+                    user_id: session.user.id,
+                    data: { agencies, currentAgencyId },
+                    updated_at: new Date().toISOString()
+                });
+            };
+            // Debounce or just save
+            saveData().catch(console.error);
+        }
+    }, [agencies, currentAgencyId, isLoaded, session]);
 
     const currentAgency = agencies.find(a => a.id === currentAgencyId);
 
@@ -267,6 +326,26 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         setCurrentAgencyId("default-agency");
     };
 
+    // Migration function
+    const syncLocalToCloud = async () => {
+        if (!session?.user?.id) return alert("กรุณาเข้าสู่ระบบก่อนซิงค์ข้อมูล");
+
+        if (confirm("คุณต้องการอัปโหลดข้อมูลจากเครื่องนี้ไปทับข้อมูลบน Cloud ใช่หรือไม่?")) {
+            const { supabase } = await import("@/lib/supabase");
+            const { error } = await supabase.from("user_data").upsert({
+                user_id: session.user.id,
+                data: { agencies, currentAgencyId },
+                updated_at: new Date().toISOString()
+            });
+
+            if (error) {
+                alert("เกิดข้อผิดพลาดในการซิงค์: " + error.message);
+            } else {
+                alert("ซิงค์ข้อมูลสำเร็จ!");
+            }
+        }
+    };
+
     return (
         <ProjectContext.Provider value={{
             agencies,
@@ -285,7 +364,10 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             addAgency,
             switchAgency,
             updateAgencyName,
-            deleteAgency
+            deleteAgency,
+            // @ts-ignore
+            session,
+            syncLocalToCloud
         }}>
             {children}
         </ProjectContext.Provider>

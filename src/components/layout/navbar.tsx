@@ -8,7 +8,7 @@ import { ChangePasscodeModal } from "@/components/feature/ChangePasscodeModal";
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
-    const { currentAgency } = useProjects();
+    const { currentAgency, session, syncLocalToCloud } = useProjects();
     const [isAgencyModalOpen, setIsAgencyModalOpen] = useState(false);
     const [isChangePasscodeOpen, setIsChangePasscodeOpen] = useState(false);
 
@@ -67,6 +67,51 @@ export function Navbar() {
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Z" /><circle cx="12" cy="12" r="3" /></svg>
                         </Button>
+
+                        {/* Cloud/Auth Controls */}
+                        {session ? (
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={syncLocalToCloud}
+                                    className="hidden sm:flex text-stone-500 hover:text-orange-600 font-bold gap-2"
+                                    title="ซิงค์ข้อมูล"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" /><path d="M16 21h5v-5" /></svg>
+                                    <span className="text-xs">ซิงค์</span>
+                                </Button>
+                                <div className="hidden sm:flex flex-col items-end mr-2">
+                                    <span className="text-[10px] font-black text-stone-400 uppercase tracking-wider">บัญชีผู้ใช้</span>
+                                    <span className="text-xs font-bold text-stone-700 max-w-[100px] truncate">{session.user.email}</span>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={async () => {
+                                        const { supabase } = await import("@/lib/supabase");
+                                        await supabase.auth.signOut();
+                                        window.location.reload();
+                                    }}
+                                    className="h-9 w-9 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                    title="ออกจากระบบ"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" x2="9" y1="12" y2="12" /></svg>
+                                </Button>
+                            </div>
+                        ) : (
+                            <Link href="/auth">
+                                <Button
+                                    variant="ghost"
+                                    className="flex items-center gap-2 text-stone-500 hover:text-orange-600 font-bold"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="10" r="3" /><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662" /></svg>
+                                    <span className="hidden sm:inline text-xs">เข้าสู่ระบบ</span>
+                                </Button>
+                            </Link>
+                        )}
+
+                        <div className="w-px h-6 bg-stone-200 mx-1"></div>
 
                         {/* Settings Button */}
                         <Button
