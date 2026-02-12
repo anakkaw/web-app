@@ -59,6 +59,7 @@ interface ProjectContextType {
     deleteAgency: (id: string) => void;
     session: Session | null;
     syncLocalToCloud: () => Promise<void>;
+    duplicateProject: (id: number) => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -357,6 +358,27 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
                 alert("ซิงค์ข้อมูลสำเร็จ!");
             }
         }
+    }
+
+
+    const duplicateProject = (id: number) => {
+        const projectToCopy = projects.find(p => p.id === id);
+        if (projectToCopy) {
+            const newProject: Project = {
+                ...projectToCopy,
+                id: Date.now(),
+                name: `${projectToCopy.name} (Copy)`,
+                projectCode: `${projectToCopy.projectCode}-COPY`,
+                progress: 0,
+                progressLevel: "Not Start",
+                // Keep other fields like budget, owner, location, wbs
+            };
+            setAgencies(prev => prev.map(a =>
+                a.id === currentAgencyId
+                    ? { ...a, projects: [newProject, ...a.projects] }
+                    : a
+            ));
+        }
     };
 
     return (
@@ -379,7 +401,8 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             updateAgencyName,
             deleteAgency,
             session,
-            syncLocalToCloud
+            syncLocalToCloud,
+            duplicateProject
         }}>
             {children}
         </ProjectContext.Provider>
