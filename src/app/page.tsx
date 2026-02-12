@@ -171,14 +171,14 @@ export default function Home() {
                     type="number"
                     value={tempBudget}
                     onChange={(e) => setTempBudget(e.target.value)}
-                    className="h-10 text-2xl font-medium font-mono focus-visible:ring-blue-500/20 border-white/20 bg-white/20 text-white placeholder-blue-200"
+                    className="h-10 text-2xl font-medium  focus-visible:ring-blue-500/20 border-white/20 bg-white/20 text-white placeholder-blue-200"
                     autoFocus
                   />
                   <Button onClick={handleBudgetSave} size="sm" className="bg-white hover:bg-blue-50 text-blue-600 font-black h-10 px-4 rounded-lg">บันทึก</Button>
                 </div>
               ) : (
                 <div className="flex items-center justify-between group/val">
-                  <div className="text-3xl lg:text-4xl font-medium text-white tracking-tighter drop-shadow-md">฿{totalAllocatedBudget.toLocaleString()}</div>
+                  <div className="text-3xl lg:text-4xl font-medium text-white  drop-shadow-md">฿{totalAllocatedBudget.toLocaleString()}</div>
                   <Button variant="ghost" size="icon" onClick={handleBudgetEditClick} className="h-8 w-8 text-blue-200 hover:text-white hover:bg-white/10 rounded-full transition-all opacity-0 group-hover/val:opacity-100">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
                   </Button>
@@ -196,7 +196,7 @@ export default function Home() {
               <CardTitle className="text-sm font-black text-white/90 uppercase tracking-widest drop-shadow-md">งบ (คงเหลือ)</CardTitle>
             </CardHeader>
             <CardContent className="relative z-10 px-5 pb-4">
-              <div className="text-3xl lg:text-4xl font-medium tracking-tighter drop-shadow-md">
+              <div className="text-3xl lg:text-4xl font-medium  drop-shadow-md">
                 ฿{remainingBudget.toLocaleString()}
               </div>
             </CardContent>
@@ -211,7 +211,7 @@ export default function Home() {
               <CardTitle className="text-sm font-black text-orange-100 uppercase tracking-widest drop-shadow-md">โครงการทั้งหมด</CardTitle>
             </CardHeader>
             <CardContent className="relative z-10 px-5 pb-4">
-              <div className="text-3xl lg:text-4xl font-medium text-white tracking-tighter drop-shadow-md">{projects.length} <span className="text-lg text-orange-100 font-bold">โครงการ</span></div>
+              <div className="text-3xl lg:text-4xl font-medium text-white  drop-shadow-md">{projects.length} <span className="text-lg text-orange-100 font-bold">โครงการ</span></div>
             </CardContent>
           </Card>
         </div>
@@ -276,7 +276,7 @@ export default function Home() {
                           <span className={`flex h-3 w-3 rounded-full ${colors.bg} ring-2 ${colors.ring}`}></span>
                           {category}
                         </span>
-                        <span className="font-mono font-bold text-stone-700 text-sm">฿{budget.toLocaleString()} <span className="text-xs text-stone-400 font-medium ml-1">({totalProjectBudget > 0 ? ((budget / totalProjectBudget) * 100).toFixed(1) : 0}%)</span></span>
+                        <span className=" font-bold text-stone-700 text-sm">฿{budget.toLocaleString()} <span className="text-xs text-stone-400 font-medium ml-1">({totalProjectBudget > 0 ? ((budget / totalProjectBudget) * 100).toFixed(1) : 0}%)</span></span>
                       </div>
                       <div className="h-2.5 w-full rounded-full bg-stone-100 overflow-hidden ring-1 ring-stone-200/50">
                         <div
@@ -373,7 +373,7 @@ export default function Home() {
                             <td className="px-6 py-3 align-middle text-stone-500 font-bold text-xs whitespace-nowrap">
                               {project.activityDate ? new Date(project.activityDate).toLocaleDateString('th-TH', { year: '2-digit', month: 'short', day: 'numeric' }) : '-'}
                             </td>
-                            <td className="px-6 py-3 align-middle font-mono font-bold text-stone-400 text-xs">#{project.projectCode || "N/A"}</td>
+                            <td className="px-6 py-3 align-middle  font-bold text-stone-400 text-xs">#{project.projectCode || "N/A"}</td>
                             <td className="px-6 py-3 align-middle font-bold text-stone-900 text-sm">{project.name}</td>
                             <td className="px-6 py-3 align-middle text-center">
                               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm ring-1 ring-inset
@@ -390,7 +390,7 @@ export default function Home() {
                                 }[project.progressLevel || 'Not Start']}
                               </span>
                             </td>
-                            <td className="px-6 py-3 align-middle text-right font-mono font-black text-stone-700 text-sm">฿{project.budget.toLocaleString()}</td>
+                            <td className="px-6 py-3 align-middle text-right  font-black text-stone-700 text-sm">฿{project.budget.toLocaleString()}</td>
                             <td className="px-6 py-3 align-middle text-center">
                               <span className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] font-bold border shadow-sm backdrop-blur-sm
                                 ${getCategoryColor(project.category || "อื่นๆ").lightBg}

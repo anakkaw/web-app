@@ -109,7 +109,7 @@ export function WBS({
                             <tbody className="divide-y divide-stone-50">
                                 {items.map((item, index) => (
                                     <tr key={item.id} className="group hover:bg-[#fff7ed] transition-all">
-                                        <td className="px-2 py-1.5 text-center text-stone-400 font-mono text-xs">
+                                        <td className="px-2 py-1.5 text-center text-stone-400  text-xs">
                                             {index + 1}
                                         </td>
                                         <td className="px-2 py-1.5">
@@ -143,7 +143,7 @@ export function WBS({
                                                         e.target.value === '' ? 0 : parseFloat(e.target.value)
                                                     )
                                                 }
-                                                className="h-9 text-right font-mono font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 text-base"
+                                                className="h-9 text-right  font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 text-base"
                                             />
                                         </td>
                                         <td className="px-2 py-1.5">
@@ -167,10 +167,10 @@ export function WBS({
                                                         e.target.value === '' ? 0 : parseFloat(e.target.value)
                                                     )
                                                 }
-                                                className="h-9 text-right font-mono font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 text-base"
+                                                className="h-9 text-right  font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 text-base"
                                             />
                                         </td>
-                                        <td className="px-4 py-1.5 text-right font-mono font-black text-stone-600 text-base">
+                                        <td className="px-4 py-1.5 text-right  font-black text-stone-600 text-base">
                                             ฿{(item.quantity * item.unitPrice).toLocaleString()}
                                         </td>
                                         <td className="px-4 py-2 text-center">
@@ -216,7 +216,7 @@ export function WBS({
                 <div className="p-6 flex items-center justify-end bg-orange-600 border-t border-orange-700 shadow-[inset_0_4px_12px_rgba(0,0,0,0.1)]">
                     <div className="text-right">
                         <p className="text-[10px] font-black text-orange-200 uppercase tracking-[0.3em] mb-1">งบประมาณโครงการสุทธิ</p>
-                        <p className="text-4xl font-black text-white tracking-tighter drop-shadow-md">
+                        <p className="text-4xl font-black text-white  drop-shadow-md">
                             ฿{grandTotal.toLocaleString()}
                         </p>
                     </div>

@@ -200,7 +200,7 @@ function ProjectDetailContent() {
                                         onChange={(e) => handleChange('projectCode', e.target.value)}
                                         onBlur={() => setIsEditingCode(false)}
                                         onKeyDown={(e) => e.key === 'Enter' && setIsEditingCode(false)}
-                                        className="w-32 text-sm font-mono font-bold bg-white shadow-lg border-orange-300 focus:ring-orange-500"
+                                        className="w-32 text-sm  font-bold bg-white shadow-lg border-orange-300 focus:ring-orange-500"
                                     />
                                 ) : (
                                     <div
@@ -209,7 +209,7 @@ function ProjectDetailContent() {
                                     >
                                         <span className="text-xs font-bold text-stone-500">รหัสโครงการ</span>
                                         <div className="flex items-center gap-1">
-                                            <span className="text-sm font-mono font-bold text-stone-600 group-hover:text-orange-600">
+                                            <span className="text-sm  font-bold text-stone-600 group-hover:text-orange-600">
                                                 {formData.projectCode || "CODE"}
                                             </span>
                                         </div>
@@ -233,7 +233,7 @@ function ProjectDetailContent() {
                         <CardContent className="relative z-10 px-5 pb-4">
                             <div className="flex items-center gap-2">
                                 <span className="text-xl font-medium text-white/80">฿</span>
-                                <div className="h-8 text-2xl font-medium font-mono text-white flex items-center">
+                                <div className="h-8 text-2xl font-medium  text-white flex items-center">
                                     {formData.budget.toLocaleString()}
                                 </div>
                             </div>

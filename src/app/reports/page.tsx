@@ -120,7 +120,7 @@ export default function Reports() {
                                                 className="group hover:bg-orange-50/40 transition-colors"
                                             >
                                                 <td className="px-6 py-4">
-                                                    <div className="font-mono text-[10px] font-bold text-stone-400">#{project.projectCode || "N/A"}</div>
+                                                    <div className=" text-[10px] font-bold text-stone-400">#{project.projectCode || "N/A"}</div>
                                                     <div className="font-bold text-stone-900 text-sm">{project.name}</div>
                                                 </td>
                                                 <td className="px-6 py-4">
@@ -155,7 +155,7 @@ export default function Reports() {
                                                         {project.category}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-right font-black text-stone-900 text-base font-mono">
+                                                <td className="px-6 py-4 text-right font-black text-stone-900 text-base ">
                                                     ฿{project.budget.toLocaleString()}
                                                 </td>
                                             </tr>
