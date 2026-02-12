@@ -26,6 +26,7 @@ export default function Home() {
     updateTotalAllocatedBudget,
     clearAllData,
     duplicateProject,
+    resetAllProjectDates,
   } = useProjects();
   const [isManageCategoriesOpen, setIsManageCategoriesOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -125,6 +126,15 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetAllProjectDates}
+              className="gap-2 border-orange-200/50 text-orange-600 hover:bg-orange-50 hover:border-orange-300 font-bold h-10 px-4 rounded-xl transition-all"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><path d="M3 10h18" /><path d="M5 6h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" /><path d="M10 16h4" /><path d="M12 14v4" /></svg>
+              รีเซ็ตวันที่
+            </Button>
             <Button
               variant="outline"
               size="sm"

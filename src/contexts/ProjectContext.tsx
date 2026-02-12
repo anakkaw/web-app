@@ -60,6 +60,7 @@ interface ProjectContextType {
     session: Session | null;
     syncLocalToCloud: () => Promise<void>;
     duplicateProject: (id: number) => void;
+    resetAllProjectDates: () => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -372,12 +373,23 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
                 progress: 0,
                 progressLevel: "Not Start",
                 // Keep other fields like budget, owner, location, wbs
+                activityDate: undefined, // Clear date on copy
             };
             setAgencies(prev => prev.map(a =>
                 a.id === currentAgencyId
                     ? { ...a, projects: [newProject, ...a.projects] }
                     : a
             ));
+        }
+    };
+
+    const resetAllProjectDates = () => {
+        if (confirm("คำเตือน: คุณต้องการล้างวันที่กิจกรรมของ 'ทุกโครงการ' ใน 'ทุกหน่วยงาน' ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้")) {
+            setAgencies(prev => prev.map(a => ({
+                ...a,
+                projects: a.projects.map(p => ({ ...p, activityDate: "" }))
+            })));
+            alert("ล้างวันที่กิจกรรมเรียบร้อยแล้ว");
         }
     };
 
@@ -402,7 +414,8 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             deleteAgency,
             session,
             syncLocalToCloud,
-            duplicateProject
+            duplicateProject,
+            resetAllProjectDates
         }}>
             {children}
         </ProjectContext.Provider>
