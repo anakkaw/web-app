@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectContext";
 import { useState, useEffect } from "react";
+import { getCategoryColor } from "@/lib/utils";
 
 export default function Home() {
   const {
@@ -50,8 +51,6 @@ export default function Home() {
   };
 
   const handleBudgetEditClick = () => {
-    // Check session if we want to enforce login, or just allow it since passcode is removed.
-    // For now, allow it regardless of session for local usability, mirroring the removal of restriction.
     handleBudgetEditConfirm();
   };
 
@@ -108,72 +107,74 @@ export default function Home() {
     <div className="min-h-screen bg-[#fffcfb] font-sans">
       <Navbar />
 
-      <main className="app-container px-6 py-12 lg:px-10 relative animation-in fade-in slide-in-from-bottom-2 duration-700">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-12 gap-6 relative z-10">
+      <main className="app-container px-4 py-8 lg:px-8 relative animation-in fade-in slide-in-from-bottom-2 duration-700">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4 relative z-10">
           <div>
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-orange-600 mb-3 drop-shadow-sm animate-in fade-in slide-in-from-left-2 transition-all">
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-orange-600 mb-2 drop-shadow-sm animate-in fade-in slide-in-from-left-2 transition-all">
               ระบบบริหารจัดการโครงการ
             </h1>
             <p className="text-stone-500 text-lg font-medium max-w-xl leading-relaxed">
               ติดตามสถานะและงบประมาณของโครงการทั้งหมดในที่เดียว
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
+              size="sm"
               onClick={() => {
                 if (confirm("คุณต้องการล้างข้อมูลทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้")) {
                   clearAllData();
                 }
               }}
-              className="gap-2 border-red-200/50 text-red-600 hover:bg-red-50 hover:border-red-300 font-bold h-11 px-6 rounded-xl transition-all"
+              className="gap-2 border-red-200/50 text-red-600 hover:bg-red-50 hover:border-red-300 font-bold h-10 px-4 rounded-xl transition-all"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
               ล้างข้อมูล
             </Button>
             <Button
               variant="outline"
+              size="sm"
               onClick={() => setIsManageCategoriesOpen(true)}
-              className="gap-2 border-stone-200/50 hover:bg-orange-50 hover:text-orange-700 text-stone-600 font-bold h-11 px-6 rounded-xl transition-all bg-white/50 backdrop-blur-sm"
+              className="gap-2 border-stone-200/50 hover:bg-orange-50 hover:text-orange-700 text-stone-600 font-bold h-10 px-4 rounded-xl transition-all bg-white/50 backdrop-blur-sm"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
               จัดการประเภท
             </Button>
-            <Button asChild className="gap-2 bg-stone-900 hover:bg-black text-white font-black h-11 px-8 rounded-xl shadow-xl shadow-stone-900/20 transition-all active:scale-95 hover:-translate-y-0.5">
+            <Button size="sm" asChild className="gap-2 bg-stone-900 hover:bg-black text-white font-black h-10 px-6 rounded-xl shadow-xl shadow-stone-900/20 transition-all active:scale-95 hover:-translate-y-0.5">
               <Link href="/projects/new">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
                 สร้างโครงการใหม่
               </Link>
             </Button>
           </div>
         </div>
 
-        <div className="mb-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {/* Allocated Budget - Blue */}
-          <Card className="relative overflow-hidden border-none shadow-2xl rounded-[1.5rem] bg-gradient-to-br from-blue-600 to-indigo-700 text-white transform hover:scale-[1.02] transition-all duration-300">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="currentColor"><rect width="20" height="14" x="2" y="5" rx="2" /><line x1="2" x2="22" y1="10" y2="10" /></svg>
+          <Card className="relative overflow-hidden border-none shadow-xl rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white transform hover:scale-[1.01] transition-all duration-300">
+            <div className="absolute top-0 right-0 p-3 opacity-10">
+              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><rect width="20" height="14" x="2" y="5" rx="2" /><line x1="2" x2="22" y1="10" y2="10" /></svg>
             </div>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
-              <CardTitle className="text-sm font-black text-blue-100 uppercase tracking-widest drop-shadow-md">งบประมาณที่ได้รับจัดสรร</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-4 px-5 relative z-10">
+              <CardTitle className="text-sm font-black text-blue-100 uppercase tracking-widest drop-shadow-md">งบ (ได้รับจัดสรร)</CardTitle>
             </CardHeader>
-            <CardContent className="relative z-10">
+            <CardContent className="relative z-10 px-5 pb-4">
               {isEditingBudget ? (
                 <div className="flex gap-2 animate-in fade-in slide-in-from-top-1">
                   <Input
                     type="number"
                     value={tempBudget}
                     onChange={(e) => setTempBudget(e.target.value)}
-                    className="h-12 text-3xl font-black font-mono focus-visible:ring-blue-500/20 border-white/20 bg-white/20 text-white placeholder-blue-200"
+                    className="h-10 text-2xl font-medium font-mono focus-visible:ring-blue-500/20 border-white/20 bg-white/20 text-white placeholder-blue-200"
                     autoFocus
                   />
-                  <Button onClick={handleBudgetSave} size="sm" className="bg-white hover:bg-blue-50 text-blue-600 font-black h-12 px-6 rounded-xl">บันทึก</Button>
+                  <Button onClick={handleBudgetSave} size="sm" className="bg-white hover:bg-blue-50 text-blue-600 font-black h-10 px-4 rounded-lg">บันทึก</Button>
                 </div>
               ) : (
                 <div className="flex items-center justify-between group/val">
-                  <div className="text-4xl lg:text-5xl font-black text-white tracking-tighter drop-shadow-md">฿{totalAllocatedBudget.toLocaleString()}</div>
-                  <Button variant="ghost" size="icon" onClick={handleBudgetEditClick} className="h-10 w-10 text-blue-200 hover:text-white hover:bg-white/10 rounded-full transition-all opacity-0 group-hover/val:opacity-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
+                  <div className="text-3xl lg:text-4xl font-medium text-white tracking-tighter drop-shadow-md">฿{totalAllocatedBudget.toLocaleString()}</div>
+                  <Button variant="ghost" size="icon" onClick={handleBudgetEditClick} className="h-8 w-8 text-blue-200 hover:text-white hover:bg-white/10 rounded-full transition-all opacity-0 group-hover/val:opacity-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
                   </Button>
                 </div>
               )}
@@ -181,47 +182,48 @@ export default function Home() {
           </Card>
 
           {/* Remaining Budget - Green */}
-          <Card className={`relative overflow-hidden border-none shadow-2xl rounded-[1.5rem] text-white transform hover:scale-[1.02] transition-all duration-300 ${remainingBudget >= 0 ? "bg-gradient-to-br from-emerald-500 to-teal-700" : "bg-gradient-to-br from-red-500 to-rose-700"}`}>
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+          <Card className={`relative overflow-hidden border-none shadow-xl rounded-2xl text-white transform hover:scale-[1.01] transition-all duration-300 ${remainingBudget >= 0 ? "bg-gradient-to-br from-emerald-500 to-teal-700" : "bg-gradient-to-br from-red-500 to-rose-700"}`}>
+            <div className="absolute top-0 right-0 p-3 opacity-10">
+              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
             </div>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
-              <CardTitle className="text-sm font-black text-white/90 uppercase tracking-widest drop-shadow-md">งบประมาณคงเหลือ</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-4 px-5 relative z-10">
+              <CardTitle className="text-sm font-black text-white/90 uppercase tracking-widest drop-shadow-md">งบ (คงเหลือ)</CardTitle>
             </CardHeader>
-            <CardContent className="relative z-10">
-              <div className="text-4xl lg:text-5xl font-black tracking-tighter drop-shadow-md">
+            <CardContent className="relative z-10 px-5 pb-4">
+              <div className="text-3xl lg:text-4xl font-medium tracking-tighter drop-shadow-md">
                 ฿{remainingBudget.toLocaleString()}
               </div>
             </CardContent>
           </Card>
 
           {/* Total Projects - Orange */}
-          <Card className="relative overflow-hidden border-none shadow-2xl rounded-[1.5rem] bg-gradient-to-br from-orange-500 to-amber-600 text-white transform hover:scale-[1.02] transition-all duration-300">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="currentColor"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v1h20Z" /><path d="M2 11v7a2 2 0 0 0 2 2h7" /><path d="M16 11l5 5-5 5" /><path d="M21 16H9" /></svg>
+          <Card className="relative overflow-hidden border-none shadow-xl rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 text-white transform hover:scale-[1.01] transition-all duration-300">
+            <div className="absolute top-0 right-0 p-3 opacity-10">
+              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v1h20Z" /><path d="M2 11v7a2 2 0 0 0 2 2h7" /><path d="M16 11l5 5-5 5" /><path d="M21 16H9" /></svg>
             </div>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-4 px-5 relative z-10">
               <CardTitle className="text-sm font-black text-orange-100 uppercase tracking-widest drop-shadow-md">โครงการทั้งหมด</CardTitle>
             </CardHeader>
-            <CardContent className="relative z-10">
-              <div className="text-4xl lg:text-5xl font-black text-white tracking-tighter drop-shadow-md">{projects.length} <span className="text-xl text-orange-100 font-bold">โครงการ</span></div>
+            <CardContent className="relative z-10 px-5 pb-4">
+              <div className="text-3xl lg:text-4xl font-medium text-white tracking-tighter drop-shadow-md">{projects.length} <span className="text-lg text-orange-100 font-bold">โครงการ</span></div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Overall Progress Summary */}
-        <div className="mb-12">
-          <Card className="card-premium border-none ring-1 ring-white/50 overflow-hidden">
-            <CardHeader className="bg-white/40 border-b border-white/20 backdrop-blur-sm">
-              <CardTitle className="flex items-center gap-3 text-stone-900 text-xl font-black">
-                <div className="p-2.5 bg-blue-100 rounded-xl shadow-sm text-blue-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
+        {/* Combined Charts Section using Grid */}
+        <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Overall Progress Summary */}
+          <Card className="card-premium border-none ring-1 ring-white/50 overflow-hidden h-full">
+            <CardHeader className="bg-white/40 border-b border-white/20 backdrop-blur-sm py-4 px-6">
+              <CardTitle className="flex items-center gap-2 text-stone-900 text-lg font-black">
+                <div className="p-1.5 bg-blue-100 rounded-lg shadow-sm text-blue-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" /></svg>
                 </div>
                 ภาพรวมความคืบหน้า
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-8">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-2 gap-4">
                 {['Not Start', 'Planning', 'In Progress', 'Done'].map((status) => {
                   const count = projects.filter(p => (p.progressLevel || 'Not Start') === status).length;
                   const colorMap: Record<string, string> = {
@@ -237,49 +239,51 @@ export default function Home() {
                     'Done': 'เสร็จสิ้น'
                   };
                   return (
-                    <div key={status} className={`p-6 rounded-2xl flex flex-col items-center justify-center gap-3 ring-1 ring-inset ${colorMap[status]} transition-transform hover:scale-105 duration-300`}>
-                      <span className="text-sm font-black opacity-80 uppercase tracking-wider">{labelMap[status]}</span>
-                      <span className="text-5xl font-black tracking-tighter">{count}</span>
+                    <div key={status} className={`p-4 rounded-xl flex flex-col items-center justify-center gap-2 ring-1 ring-inset ${colorMap[status]} transition-transform hover:scale-105 duration-300`}>
+                      <span className="text-xs font-black opacity-80 uppercase tracking-wider">{labelMap[status]}</span>
+                      <span className="text-3xl font-black tracking-tighter">{count}</span>
                     </div>
                   );
                 })}
               </div>
             </CardContent>
           </Card>
-        </div>
 
-        <div className="mb-12">
-          <Card className="card-premium border-none ring-1 ring-white/50 overflow-hidden">
-            <CardHeader className="bg-white/40 border-b border-white/20 backdrop-blur-sm">
-              <CardTitle className="flex items-center gap-3 text-stone-900 text-xl font-black">
-                <div className="p-2.5 bg-orange-100 rounded-xl shadow-sm text-orange-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><path d="M22 12A10 10 0 0 0 12 2v10z" /></svg>
+          {/* Category Proportion */}
+          <Card className="card-premium border-none ring-1 ring-white/50 overflow-hidden h-full">
+            <CardHeader className="bg-white/40 border-b border-white/20 backdrop-blur-sm py-4 px-6">
+              <CardTitle className="flex items-center gap-2 text-stone-900 text-lg font-black">
+                <div className="p-1.5 bg-orange-100 rounded-lg shadow-sm text-orange-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><path d="M22 12A10 10 0 0 0 12 2v10z" /></svg>
                 </div>
-                สัดส่วนโครงการตามประเภท
+                สัดส่วนงบประมาณตามประเภทโครงการ
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-8">
-              <div className="space-y-8">
-                {Object.entries(budgetByCategory).map(([category, budget]) => (
-                  <div key={category} className="space-y-3">
-                    <div className="flex justify-between items-end">
-                      <span className="flex items-center gap-3 text-stone-700 font-bold text-lg">
-                        <span className="flex h-4 w-4 rounded-full bg-orange-500 ring-4 ring-orange-100"></span>
-                        {category}
-                      </span>
-                      <span className="font-mono font-bold text-stone-700 text-lg">฿{budget.toLocaleString()} <span className="text-sm text-stone-400 font-medium ml-1">({totalProjectBudget > 0 ? ((budget / totalProjectBudget) * 100).toFixed(1) : 0}%)</span></span>
+            <CardContent className="p-6">
+              <div className="space-y-4 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
+                {Object.entries(budgetByCategory).map(([category, budget]) => {
+                  const colors = getCategoryColor(category);
+                  return (
+                    <div key={category} className="space-y-2">
+                      <div className="flex justify-between items-end">
+                        <span className="flex items-center gap-2 text-stone-700 font-bold text-sm">
+                          <span className={`flex h-3 w-3 rounded-full ${colors.bg} ring-2 ${colors.ring}`}></span>
+                          {category}
+                        </span>
+                        <span className="font-mono font-bold text-stone-700 text-sm">฿{budget.toLocaleString()} <span className="text-xs text-stone-400 font-medium ml-1">({totalProjectBudget > 0 ? ((budget / totalProjectBudget) * 100).toFixed(1) : 0}%)</span></span>
+                      </div>
+                      <div className="h-2.5 w-full rounded-full bg-stone-100 overflow-hidden ring-1 ring-stone-200/50">
+                        <div
+                          className={`h-full rounded-full ${colors.bg} shadow-lg transition-all duration-1000 ease-out`}
+                          style={{ width: `${maxCategoryBudget > 0 ? (budget / maxCategoryBudget) * 100 : 0}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-4 w-full rounded-full bg-stone-100 overflow-hidden ring-1 ring-stone-200/50">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg shadow-orange-500/20 transition-all duration-1000 ease-out"
-                        style={{ width: `${maxCategoryBudget > 0 ? (budget / maxCategoryBudget) * 100 : 0}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {Object.keys(budgetByCategory).length === 0 && (
-                  <div className="text-center py-16 bg-stone-50/50 rounded-3xl border-2 border-dashed border-stone-200">
-                    <p className="text-stone-400 font-bold text-lg">ยังไม่มีข้อมูลโครงการ</p>
+                  <div className="text-center py-10 bg-stone-50/50 rounded-2xl border-2 border-dashed border-stone-200">
+                    <p className="text-stone-400 font-bold text-base">ยังไม่มีข้อมูลโครงการ</p>
                   </div>
                 )}
               </div>
@@ -289,10 +293,10 @@ export default function Home() {
 
         {/* Recent Projects Table */}
         <Card className="card-premium border-none ring-1 ring-white/50 overflow-hidden shadow-xl shadow-stone-200/50">
-          <CardHeader className="bg-white/60 border-b border-white/20 backdrop-blur-md sticky top-0 z-20 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <CardTitle className="flex items-center gap-3 text-xl text-stone-900 font-black">
-              <div className="p-2.5 bg-stone-900 rounded-xl shadow-sm text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></svg>
+          <CardHeader className="bg-white/60 border-b border-white/20 backdrop-blur-md sticky top-0 z-20 flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 px-6">
+            <CardTitle className="flex items-center gap-2 text-lg text-stone-900 font-black">
+              <div className="p-1.5 bg-stone-900 rounded-lg shadow-sm text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></svg>
               </div>
               รายการโครงการ
             </CardTitle>
@@ -300,7 +304,7 @@ export default function Home() {
               <Button
                 variant={filterCategory === 'ทั้งหมด' ? 'default' : 'outline'}
                 onClick={() => setFilterCategory('ทั้งหมด')}
-                className={`h-9 px-4 rounded-lg font-bold text-xs ${filterCategory === 'ทั้งหมด' ? 'bg-stone-900 text-white hover:bg-black' : 'text-stone-500 border-stone-200 hover:bg-stone-50'}`}
+                className={`h-8 px-3 rounded-lg font-bold text-[11px] ${filterCategory === 'ทั้งหมด' ? 'bg-stone-900 text-white hover:bg-black' : 'text-stone-500 border-stone-200 hover:bg-stone-50'}`}
               >
                 ทั้งหมด
               </Button>
@@ -309,7 +313,7 @@ export default function Home() {
                   key={cat}
                   variant={filterCategory === cat ? 'default' : 'outline'}
                   onClick={() => setFilterCategory(cat)}
-                  className={`h-9 px-4 rounded-lg font-bold text-xs ${filterCategory === cat ? 'bg-orange-600 text-white hover:bg-orange-700 border-none' : 'text-stone-500 border-stone-200 hover:bg-orange-50 hover:text-orange-700'}`}
+                  className={`h-8 px-3 rounded-lg font-bold text-[11px] ${filterCategory === cat ? 'bg-orange-600 text-white hover:bg-orange-700 border-none' : 'text-stone-500 border-stone-200 hover:bg-orange-50 hover:text-orange-700'}`}
                 >
                   {cat}
                 </Button>
@@ -339,34 +343,34 @@ export default function Home() {
                     <table className="w-full text-sm text-left border-collapse">
                       <thead>
                         <tr className="border-b border-stone-200/60 bg-stone-50/80 backdrop-blur-sm">
-                          <th className="h-16 px-8 align-middle font-black text-stone-400 uppercase tracking-widest text-[11px]">วันที่</th>
-                          <th onClick={() => requestSort('projectCode')} className="h-16 px-8 align-middle font-black text-stone-400 uppercase tracking-widest text-[11px] cursor-pointer hover:text-orange-600 transition-colors group">
+                          <th className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px]">วันที่</th>
+                          <th onClick={() => requestSort('projectCode')} className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] cursor-pointer hover:text-orange-600 transition-colors group">
                             รหัส
                             <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-orange-600">{sortConfig?.key === 'projectCode' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
                           </th>
-                          <th className="h-16 px-8 align-middle font-black text-stone-400 uppercase tracking-widest text-[11px]">ชื่อโครงการ</th>
-                          <th className="h-16 px-8 align-middle font-black text-stone-400 uppercase tracking-widest text-[11px] text-center">สถานะ</th>
-                          <th onClick={() => requestSort('budget')} className="h-16 px-8 align-middle font-black text-stone-400 uppercase tracking-widest text-[11px] text-right cursor-pointer hover:text-orange-600 transition-colors group">
+                          <th className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px]">ชื่อโครงการ</th>
+                          <th className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center">สถานะ</th>
+                          <th onClick={() => requestSort('budget')} className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-right cursor-pointer hover:text-orange-600 transition-colors group">
                             งบประมาณ
                             <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-orange-600">{sortConfig?.key === 'budget' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
                           </th>
-                          <th onClick={() => requestSort('category')} className="h-16 px-8 align-middle font-black text-stone-400 uppercase tracking-widest text-[11px] text-center cursor-pointer hover:text-orange-600 transition-colors group">
+                          <th onClick={() => requestSort('category')} className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center cursor-pointer hover:text-orange-600 transition-colors group">
                             หมวดหมู่
                             <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-orange-600">{sortConfig?.key === 'category' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
                           </th>
-                          <th className="h-16 px-8 align-middle font-black text-stone-400 uppercase tracking-widest text-[11px] text-center">จัดการ</th>
+                          <th className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center">จัดการ</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-100">
                         {filteredProjects.map((project) => (
                           <tr key={project.id} className="transition-all hover:bg-orange-50/40 group">
-                            <td className="px-6 py-5 align-middle text-stone-500 font-bold text-xs whitespace-nowrap">
+                            <td className="px-6 py-3 align-middle text-stone-500 font-bold text-xs whitespace-nowrap">
                               {project.activityDate ? new Date(project.activityDate).toLocaleDateString('th-TH', { year: '2-digit', month: 'short', day: 'numeric' }) : '-'}
                             </td>
-                            <td className="px-6 py-5 align-middle font-mono font-bold text-stone-400 text-xs">#{project.projectCode || "N/A"}</td>
-                            <td className="px-6 py-5 align-middle font-bold text-stone-900 text-base">{project.name}</td>
-                            <td className="px-6 py-5 align-middle text-center">
-                              <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm ring-1 ring-inset
+                            <td className="px-6 py-3 align-middle font-mono font-bold text-stone-400 text-xs">#{project.projectCode || "N/A"}</td>
+                            <td className="px-6 py-3 align-middle font-bold text-stone-900 text-sm">{project.name}</td>
+                            <td className="px-6 py-3 align-middle text-center">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm ring-1 ring-inset
                                 ${!project.progressLevel || project.progressLevel === 'Not Start' ? 'bg-stone-100 text-stone-600 ring-stone-300' : ''}
                                 ${project.progressLevel === 'Planning' ? 'bg-indigo-50 text-indigo-700 ring-indigo-200' : ''}
                                 ${project.progressLevel === 'In Progress' ? 'bg-blue-50 text-blue-700 ring-blue-200' : ''}
@@ -380,30 +384,34 @@ export default function Home() {
                                 }[project.progressLevel || 'Not Start']}
                               </span>
                             </td>
-                            <td className="px-6 py-5 align-middle text-right font-mono font-black text-stone-700 text-base">฿{project.budget.toLocaleString()}</td>
-                            <td className="px-6 py-5 align-middle text-center">
-                              <span className="inline-flex items-center rounded-lg bg-white/80 px-3 py-1 text-[10px] font-bold text-stone-500 border border-stone-200 shadow-sm backdrop-blur-sm">
+                            <td className="px-6 py-3 align-middle text-right font-mono font-black text-stone-700 text-sm">฿{project.budget.toLocaleString()}</td>
+                            <td className="px-6 py-3 align-middle text-center">
+                              <span className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] font-bold border shadow-sm backdrop-blur-sm
+                                ${getCategoryColor(project.category || "อื่นๆ").lightBg}
+                                ${getCategoryColor(project.category || "อื่นๆ").lightText}
+                                ${getCategoryColor(project.category || "อื่นๆ").border}
+                              `}>
                                 {project.category || "อื่นๆ"}
                               </span>
                             </td>
-                            <td className="px-6 py-5 align-middle text-center">
+                            <td className="px-6 py-3 align-middle text-center">
                               <div className="flex items-center justify-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                                <Button variant="ghost" size="icon" className="h-9 w-9 text-stone-400 hover:text-stone-900 hover:bg-white hover:shadow-sm rounded-lg transition-all" asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-stone-400 hover:text-stone-900 hover:bg-white hover:shadow-sm rounded-lg transition-all" asChild>
                                   <Link href={`/projects/detail?id=${project.id}`}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
                                   </Link>
                                 </Button>
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-9 w-9 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                  className="h-8 w-8 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                                   onClick={() => {
                                     if (confirm("คุณต้องการลบโครงการนี้ใช่หรือไม่?")) {
                                       deleteProject(project.id);
                                     }
                                   }}
                                 >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
                                 </Button>
                               </div>
                             </td>

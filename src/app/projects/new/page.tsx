@@ -32,7 +32,7 @@ export default function NewProject() {
     });
 
     return (
-        <div className="min-h-screen bg-[#fff9f2] font-sans">
+        <div className="min-h-screen bg-[#fffcfb] font-sans">
             <Navbar />
 
             <main className="app-container px-6 py-12 lg:px-10">

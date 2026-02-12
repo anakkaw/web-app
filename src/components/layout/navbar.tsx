@@ -7,7 +7,7 @@ import { AgencyModal } from "@/components/feature/AgencyModal";
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
-    const { currentAgency, session, syncLocalToCloud } = useProjects();
+    const { currentAgency, session } = useProjects();
     const [isAgencyModalOpen, setIsAgencyModalOpen] = useState(false);
 
     return (
@@ -40,7 +40,7 @@ export function Navbar() {
                                 <div className="p-1 bg-orange-100 rounded-full">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-orange-600"><path d="M3 21h18" /><path d="M5 21V7l8-4 8 4v14" /><path d="M17 21v-8.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0-.5.5V21" /></svg>
                                 </div>
-                                <span>{currentAgency?.name || "เลือกหน่วยงาน"}</span>
+                                <span className="text-lg">{currentAgency?.name || "เลือกหน่วยงาน"}</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-50"><path d="m6 9 6 6 6-6" /></svg>
                             </Button>
                         </div>
@@ -76,16 +76,7 @@ export function Navbar() {
                         {/* Cloud/Auth Controls */}
                         {session ? (
                             <div className="flex items-center gap-3 pl-2">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={syncLocalToCloud}
-                                    className="hidden sm:flex text-stone-500 hover:text-orange-600 font-bold gap-2 glass-button rounded-xl h-10 px-4"
-                                    title="ซิงค์ข้อมูล"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" /><path d="M16 21h5v-5" /></svg>
-                                    <span className="text-xs">Sync</span>
-                                </Button>
+                                {/* Sync button removed as per user request */}
 
                                 <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-stone-200">
                                     <div className="flex flex-col items-end">
