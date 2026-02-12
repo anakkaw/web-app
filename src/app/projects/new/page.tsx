@@ -27,6 +27,8 @@ export default function NewProject() {
         owner: "",
         location: "",
         category: categories[0] || "อื่นๆ",
+        activityDate: new Date().toISOString().split('T')[0],
+        progressLevel: "Not Start",
     });
 
     return (
@@ -65,6 +67,8 @@ export default function NewProject() {
                                         name,
                                         budget: parseFloat(budget) || 0,
                                         status: "วางแผน",
+                                        progressLevel: formData.progressLevel as any,
+                                        activityDate: formData.activityDate,
                                         owner: formData.owner,
                                         location: formData.location,
                                         category: formData.category,
@@ -111,6 +115,33 @@ export default function NewProject() {
                                             </option>
                                         ))}
                                     </select>
+                                </div>
+
+                                <div className="grid gap-6 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="activityDate" className="text-stone-700 font-bold">วันที่จัดกิจกรรม</Label>
+                                        <Input
+                                            id="activityDate"
+                                            type="date"
+                                            className="font-medium"
+                                            value={formData.activityDate}
+                                            onChange={(e) => setFormData({ ...formData, activityDate: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="progressLevel" className="text-stone-700 font-bold">สถานะความคืบหน้า</Label>
+                                        <select
+                                            id="progressLevel"
+                                            className="flex h-11 w-full items-center justify-between rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm font-semibold text-stone-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                                            value={formData.progressLevel}
+                                            onChange={(e) => setFormData({ ...formData, progressLevel: e.target.value as any })}
+                                        >
+                                            <option value="Not Start">ยังไม่เริ่ม (Not Start)</option>
+                                            <option value="Planning">วางแผน (Planning)</option>
+                                            <option value="In Progress">กำลังดำเนินการ (In Progress)</option>
+                                            <option value="Done">เสร็จสิ้น (Done)</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-2">

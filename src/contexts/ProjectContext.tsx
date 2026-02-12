@@ -3,7 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import type { Session } from "@supabase/supabase-js";
 
-export type ProjectStatus = "วางแผน" | "กำลังดำเนินการ" | "เสร็จสิ้น";
+export type ProjectStatus = "วางแผน" | "กำลังดำเนินการ" | "เสร็จสิ้น"; // Legacy status, keeping for compatibility if needed, or we can map it.
+export type ProjectProgress = "Not Start" | "Planning" | "In Progress" | "Done";
 
 export interface WBSItem {
     id: string;
@@ -18,8 +19,10 @@ export interface Project {
     projectCode: string;
     name: string;
     budget: number;
-    status: ProjectStatus;
-    progress: number;
+    status: ProjectStatus; // Legacy
+    progress: number; // Legacy numeric progress
+    progressLevel: ProjectProgress; // New 4-level progress
+    activityDate?: string; // New Activity Date
     owner?: string;
     location?: string;
     startDate?: string;
@@ -83,6 +86,8 @@ const defaultProjects: Project[] = [
         budget: 5000000,
         status: "กำลังดำเนินการ",
         progress: 25,
+        progressLevel: "In Progress",
+        activityDate: new Date().toISOString(),
         owner: "บริษัท เอ",
         location: "กรุงเทพฯ",
         category: "อาคารพาณิชย์",
