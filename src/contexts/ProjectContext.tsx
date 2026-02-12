@@ -103,6 +103,32 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
 
     // Initial load and Auth subscription
     useEffect(() => {
+        const loadFromSupabase = async (userId: string) => {
+            const { supabase } = await import("@/lib/supabase");
+            const { data, error } = await supabase
+                .from("user_data")
+                .select("data")
+                .eq("user_id", userId)
+                .single();
+
+            if (data && data.data) {
+                // Check if data is valid JSON structure for agencies
+                const cloudData = data.data as { agencies?: Agency[], currentAgencyId?: string };
+                const cloudAgencies = cloudData.agencies;
+                const cloudCurrentId = cloudData.currentAgencyId;
+
+                if (cloudAgencies && Array.isArray(cloudAgencies)) {
+                    setAgencies(cloudAgencies);
+                    if (cloudCurrentId) setCurrentAgencyId(cloudCurrentId);
+                }
+            } else {
+                console.log("No cloud data found or error:", error);
+                // Optionally: could prompt to upload local data here, but for now just load local
+                loadFromLocalStorage();
+            }
+            setIsLoaded(true);
+        };
+
         // 1. Check for active session
         import("@/lib/supabase").then(({ supabase }) => {
             supabase.auth.getSession().then(({ data: { session } }) => {
@@ -177,31 +203,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         setIsLoaded(true);
     };
 
-    const loadFromSupabase = async (userId: string) => {
-        const { supabase } = await import("@/lib/supabase");
-        const { data, error } = await supabase
-            .from("user_data")
-            .select("data")
-            .eq("user_id", userId)
-            .single();
 
-        if (data && data.data) {
-            // Check if data is valid JSON structure for agencies
-            const cloudData = data.data as { agencies?: Agency[], currentAgencyId?: string };
-            const cloudAgencies = cloudData.agencies;
-            const cloudCurrentId = cloudData.currentAgencyId;
-
-            if (cloudAgencies && Array.isArray(cloudAgencies)) {
-                setAgencies(cloudAgencies);
-                if (cloudCurrentId) setCurrentAgencyId(cloudCurrentId);
-            }
-        } else {
-            console.log("No cloud data found or error:", error);
-            // Optionally: could prompt to upload local data here, but for now just load local
-            loadFromLocalStorage();
-        }
-        setIsLoaded(true);
-    };
 
     // Save data whenever it changes
     useEffect(() => {

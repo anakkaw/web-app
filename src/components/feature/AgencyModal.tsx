@@ -19,7 +19,7 @@ export function AgencyModal({
     isOpen: boolean;
     onClose: () => void;
 }) {
-    const { agencies, currentAgencyId, addAgency, switchAgency, deleteAgency, updateAgencyName, session } = useProjects();
+    const { agencies, currentAgencyId, addAgency, switchAgency, deleteAgency, updateAgencyName } = useProjects();
     const [newAgencyName, setNewAgencyName] = useState("");
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState("");

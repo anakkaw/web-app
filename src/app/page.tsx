@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getCategoryColor } from "@/lib/utils";
 
 export default function Home() {
@@ -59,15 +59,19 @@ export default function Home() {
     setIsEditingBudget(true);
   };
 
-  const sortedProjects = [...projects].sort((a, b) => {
-    if (!sortConfig) return 0;
-    const { key, direction } = sortConfig;
-    if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
-    if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
-    return 0;
-  });
+  const sortedProjects = useMemo(() => {
+    return [...projects].sort((a, b) => {
+      if (!sortConfig) return 0;
+      const { key, direction } = sortConfig;
+      if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
+      if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [projects, sortConfig]);
 
-  const filteredProjects = sortedProjects.filter(p => filterCategory === "ทั้งหมด" || (p.category || "อื่นๆ") === filterCategory);
+  const filteredProjects = useMemo(() => {
+    return sortedProjects.filter(p => filterCategory === "ทั้งหมด" || (p.category || "อื่นๆ") === filterCategory);
+  }, [sortedProjects, filterCategory]);
 
   const requestSort = (key: 'projectCode' | 'category' | 'budget') => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -78,14 +82,16 @@ export default function Home() {
   };
 
   // Calculate budget by category
-  const budgetByCategory = projects.reduce((acc, project) => {
-    const category = project.category || "อื่นๆ";
-    if (!acc[category]) {
-      acc[category] = 0;
-    }
-    acc[category] += project.budget;
-    return acc;
-  }, {} as Record<string, number>);
+  const budgetByCategory = useMemo(() => {
+    return projects.reduce((acc, project) => {
+      const category = project.category || "อื่นๆ";
+      if (!acc[category]) {
+        acc[category] = 0;
+      }
+      acc[category] += project.budget;
+      return acc;
+    }, {} as Record<string, number>);
+  }, [projects]);
 
   const maxCategoryBudget = Math.max(...Object.values(budgetByCategory), 0);
 

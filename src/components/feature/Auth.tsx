@@ -34,8 +34,12 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess?: () => void }) 
                 if (error) throw error
                 setMessage({ text: 'สมัครสมาชิกสำเร็จ! กรุณาตรวจสอบอีเมลเพื่อยืนยันตัวตน', type: 'success' })
             }
-        } catch (error: any) {
-            setMessage({ text: error.message || 'เกิดข้อผิดพลาด', type: 'error' })
+        } catch (error) {
+            if (error instanceof Error) {
+                setMessage({ text: error.message || 'เกิดข้อผิดพลาด', type: 'error' })
+            } else {
+                setMessage({ text: 'เกิดข้อผิดพลาดที่ไม่รู้จัก', type: 'error' })
+            }
         } finally {
             setLoading(false)
         }

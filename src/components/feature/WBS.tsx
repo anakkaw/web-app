@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -80,13 +79,16 @@ export function WBS({
     };
 
     return (
-        <Card className="w-full border-stone-200 card-premium overflow-hidden">
-            <CardHeader className="bg-stone-100/60 border-b border-stone-200 py-6 px-8">
-                <CardTitle className="flex items-center gap-3 text-stone-900 text-xl font-black tracking-tight">
-                    <div className="p-2.5 bg-orange-100 rounded-2xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-orange-600"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M16 13H8" /><path d="M16 17H8" /><path d="M10 9H8" /></svg>
+        <Card className="w-full border-none shadow-xl rounded-2xl overflow-hidden card-premium ring-1 ring-white/50">
+            <CardHeader className="bg-gradient-to-r from-stone-50 via-stone-100 to-stone-50 border-b border-stone-200 py-4 px-6 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-3 opacity-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" x2="8" y1="13" y2="13" /><line x1="16" x2="8" y1="17" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
+                </div>
+                <CardTitle className="flex items-center gap-3 text-stone-900 text-lg font-black tracking-tight relative z-10">
+                    <div className="p-2 bg-orange-500 rounded-xl shadow-lg shadow-orange-500/30 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M16 13H8" /><path d="M16 17H8" /><path d="M10 9H8" /></svg>
                     </div>
-                    รายละเอียดงบประมาณของโครงการ
+                    รายละเอียดงบประมาณของโครงการ (BOQ)
                 </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
@@ -95,29 +97,33 @@ export function WBS({
                         <table className="w-full text-sm text-left">
                             <thead>
                                 <tr className="border-b border-stone-200 bg-[#fafaf9]">
-                                    <th className="px-8 py-5 font-normal text-stone-500 uppercase tracking-wider text-sm">รายการ</th>
-                                    <th className="px-8 py-5 font-normal text-stone-500 uppercase tracking-wider text-sm text-right w-24">ปริมาณ</th>
-                                    <th className="px-8 py-5 font-normal text-stone-500 uppercase tracking-wider text-sm text-center w-24">หน่วย</th>
-                                    <th className="px-8 py-5 font-normal text-stone-500 uppercase tracking-wider text-sm text-right w-32">ราคา/หน่วย</th>
-                                    <th className="px-8 py-5 font-normal text-stone-500 uppercase tracking-wider text-sm text-right w-40">รวม</th>
-                                    <th className="px-8 py-5 w-12 text-center"></th>
+                                    <th className="px-4 py-3 font-normal text-stone-500 uppercase tracking-wider text-xs w-12 text-center">#</th>
+                                    <th className="px-4 py-3 font-normal text-stone-500 uppercase tracking-wider text-xs">รายการ</th>
+                                    <th className="px-4 py-3 font-normal text-stone-500 uppercase tracking-wider text-xs text-right w-24">ปริมาณ</th>
+                                    <th className="px-4 py-3 font-normal text-stone-500 uppercase tracking-wider text-xs text-center w-20">หน่วย</th>
+                                    <th className="px-4 py-3 font-normal text-stone-500 uppercase tracking-wider text-xs text-right w-28">ราคา/หน่วย</th>
+                                    <th className="px-4 py-3 font-normal text-stone-500 uppercase tracking-wider text-xs text-right w-36">รวม</th>
+                                    <th className="px-4 py-3 w-10 text-center"></th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-stone-50">
-                                {items.map((item) => (
+                                {items.map((item, index) => (
                                     <tr key={item.id} className="group hover:bg-[#fff7ed] transition-all">
-                                        <td className="px-4 py-2">
-                                            <div className="space-y-1.5">
+                                        <td className="px-2 py-1.5 text-center text-stone-400 font-mono text-xs">
+                                            {index + 1}
+                                        </td>
+                                        <td className="px-2 py-1.5">
+                                            <div className="space-y-1">
                                                 <Input
                                                     value={item.description}
                                                     onChange={(e) =>
                                                         updateItem(item.id, "description", e.target.value)
                                                     }
-                                                    className="h-10 border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-3 shadow-none transition-all text-stone-900 font-bold"
+                                                    className="h-9 border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 font-bold text-base"
                                                     placeholder="ระบุรายการ..."
                                                 />
-                                                <div className="px-3">
-                                                    <div className="h-1.5 w-full bg-[#e7e5e4] rounded-full overflow-hidden shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]">
+                                                <div className="px-2">
+                                                    <div className="h-1 w-full bg-[#e7e5e4] rounded-full overflow-hidden shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]">
                                                         <div
                                                             className="h-full bg-orange-600 shadow-[0_0_8px_rgba(234,88,12,0.4)] transition-all duration-500"
                                                             style={{ width: `${grandTotal > 0 ? ((item.quantity * item.unitPrice) / grandTotal) * 100 : 0}%` }}
@@ -126,64 +132,64 @@ export function WBS({
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="px-2 py-1.5">
                                             <Input
                                                 type="number"
-                                                value={item.quantity}
+                                                value={item.quantity === 0 ? '' : item.quantity}
                                                 onChange={(e) =>
                                                     updateItem(
                                                         item.id,
                                                         "quantity",
-                                                        parseFloat(e.target.value) || 0
+                                                        e.target.value === '' ? 0 : parseFloat(e.target.value)
                                                     )
                                                 }
-                                                className="h-10 text-right font-mono font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-3 shadow-none transition-all text-stone-900"
+                                                className="h-9 text-right font-mono font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 text-base"
                                             />
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="px-2 py-1.5">
                                             <Input
                                                 value={item.unit}
                                                 onChange={(e) =>
                                                     updateItem(item.id, "unit", e.target.value)
                                                 }
-                                                className="h-10 text-center font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-3 shadow-none transition-all text-stone-900"
+                                                className="h-9 text-center font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 text-sm"
                                                 placeholder="-"
                                             />
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="px-2 py-1.5">
                                             <Input
                                                 type="number"
-                                                value={item.unitPrice}
+                                                value={item.unitPrice === 0 ? '' : item.unitPrice}
                                                 onChange={(e) =>
                                                     updateItem(
                                                         item.id,
                                                         "unitPrice",
-                                                        parseFloat(e.target.value) || 0
+                                                        e.target.value === '' ? 0 : parseFloat(e.target.value)
                                                     )
                                                 }
-                                                className="h-10 text-right font-mono font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-3 shadow-none transition-all text-stone-900"
+                                                className="h-9 text-right font-mono font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 text-base"
                                             />
                                         </td>
-                                        <td className="px-6 py-3 text-right font-mono font-black text-stone-600">
+                                        <td className="px-4 py-1.5 text-right font-mono font-black text-stone-600 text-base">
                                             ฿{(item.quantity * item.unitPrice).toLocaleString()}
                                         </td>
                                         <td className="px-4 py-2 text-center">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-9 w-9 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                                className="h-8 w-8 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                                                 onClick={() => deleteItem(item.id)}
                                             >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
                                             </Button>
                                         </td>
                                     </tr>
                                 ))}
                                 {items.length === 0 && (
                                     <tr>
-                                        <td colSpan={6} className="py-20 text-center text-stone-400 bg-[#fafaf9]">
+                                        <td colSpan={7} className="py-20 text-center text-stone-400 bg-[#fafaf9]">
                                             <p className="font-bold text-lg">ยังไม่มีรายการ</p>
-                                            <p className="text-sm mt-1">กดปุ่ม "+ เพิ่มรายการ" เพื่อเริ่มบันทึกข้อมูล</p>
+                                            <p className="text-sm mt-1">กดปุ่ม &quot;+ เพิ่มรายการ&quot; เพื่อเริ่มบันทึกข้อมูล</p>
                                         </td>
                                     </tr>
                                 )}
@@ -207,10 +213,10 @@ export function WBS({
                     </div>
                 </div>
 
-                <div className="p-10 flex items-center justify-end bg-orange-600 border-t border-orange-700 shadow-[inset_0_4px_12px_rgba(0,0,0,0.1)]">
+                <div className="p-6 flex items-center justify-end bg-orange-600 border-t border-orange-700 shadow-[inset_0_4px_12px_rgba(0,0,0,0.1)]">
                     <div className="text-right">
-                        <p className="text-[10px] font-black text-orange-200 uppercase tracking-[0.3em] mb-2">งบประมาณโครงการสุทธิ</p>
-                        <p className="text-6xl font-black text-white tracking-tighter drop-shadow-md">
+                        <p className="text-[10px] font-black text-orange-200 uppercase tracking-[0.3em] mb-1">งบประมาณโครงการสุทธิ</p>
+                        <p className="text-4xl font-black text-white tracking-tighter drop-shadow-md">
                             ฿{grandTotal.toLocaleString()}
                         </p>
                     </div>
