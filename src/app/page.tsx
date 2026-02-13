@@ -297,13 +297,6 @@ export default function Home() {
                     </>
                   )}
                 </div>
-
-                <Button size="sm" asChild className="gap-2 bg-stone-900 hover:bg-black text-white font-black h-10 px-6 rounded-xl shadow-xl shadow-stone-900/20 transition-all active:scale-95 hover:-translate-y-0.5">
-                  <Link href="/projects/new">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
-                    สร้างโครงการใหม่
-                  </Link>
-                </Button>
               </>
             )}
           </div>
@@ -462,24 +455,39 @@ export default function Home() {
               </div>
               รายการโครงการ
             </CardTitle>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={filterCategory === 'ทั้งหมด' ? 'default' : 'outline'}
-                onClick={() => setFilterCategory('ทั้งหมด')}
-                className={`h-8 px-3 rounded-lg font-bold text-[11px] ${filterCategory === 'ทั้งหมด' ? 'bg-stone-900 text-white hover:bg-black' : 'text-stone-500 border-stone-200 hover:bg-stone-50'}`}
-              >
-                ทั้งหมด
-              </Button>
-              {categories.map(cat => (
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap gap-2">
                 <Button
-                  key={cat}
-                  variant={filterCategory === cat ? 'default' : 'outline'}
-                  onClick={() => setFilterCategory(cat)}
-                  className={`h-8 px-3 rounded-lg font-bold text-[11px] ${filterCategory === cat ? 'bg-orange-600 text-white hover:bg-orange-700 border-none' : 'text-stone-500 border-stone-200 hover:bg-orange-50 hover:text-orange-700'}`}
+                  variant={filterCategory === 'ทั้งหมด' ? 'default' : 'outline'}
+                  onClick={() => setFilterCategory('ทั้งหมด')}
+                  className={`h-8 px-3 rounded-lg font-bold text-[11px] ${filterCategory === 'ทั้งหมด' ? 'bg-stone-900 text-white hover:bg-black' : 'text-stone-500 border-stone-200 hover:bg-stone-50'}`}
                 >
-                  {cat}
+                  ทั้งหมด
                 </Button>
-              ))}
+                {categories.map(cat => (
+                  <Button
+                    key={cat}
+                    variant={filterCategory === cat ? 'default' : 'outline'}
+                    onClick={() => setFilterCategory(cat)}
+                    className={`h-8 px-3 rounded-lg font-bold text-[11px] ${filterCategory === cat ? 'bg-orange-600 text-white hover:bg-orange-700 border-none' : 'text-stone-500 border-stone-200 hover:bg-orange-50 hover:text-orange-700'}`}
+                  >
+                    {cat}
+                  </Button>
+                ))}
+              </div>
+
+              {userRole !== 'reader' && (
+                <div className="hidden sm:block h-6 w-px bg-stone-200"></div>
+              )}
+
+              {userRole !== 'reader' && (
+                <Button size="sm" asChild className="gap-2 bg-stone-900 hover:bg-black text-white font-black h-9 px-4 rounded-xl shadow-md transition-all active:scale-95">
+                  <Link href="/projects/new">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+                    สร้างโครงการ
+                  </Link>
+                </Button>
+              )}
             </div>
           </CardHeader>
           <CardContent className="p-0">
