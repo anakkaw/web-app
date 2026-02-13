@@ -116,6 +116,34 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     const [isLoaded, setIsLoaded] = useState(false);
     const [session, setSession] = useState<Session | null>(null);
 
+    const loadAgenciesPublicly = async () => {
+        try {
+            const { supabase } = await import("@/lib/supabase");
+            // Fetch all user_data to gather all available agencies for readers
+            const { data, error } = await supabase
+                .from("user_data")
+                .select("data");
+
+            if (data && data.length > 0) {
+                let allAgencies: Agency[] = [];
+                data.forEach(row => {
+                    const rowAgencies = (row.data as any)?.agencies;
+                    if (Array.isArray(rowAgencies)) {
+                        allAgencies = [...allAgencies, ...rowAgencies];
+                    }
+                });
+
+                if (allAgencies.length > 0) {
+                    // Remove duplicates by ID just in case
+                    const uniqueAgencies = Array.from(new Map(allAgencies.map(a => [a.id, a])).values());
+                    setAgencies(uniqueAgencies);
+                }
+            }
+        } catch (err) {
+            console.error("Error fetching agencies publicly:", err);
+        }
+    };
+
     const loadFromSupabase = async (userId: string) => {
         const { supabase } = await import("@/lib/supabase");
         const { data, error } = await supabase
@@ -125,7 +153,6 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             .single();
 
         if (data && data.data) {
-            // Check if data is valid JSON structure for agencies
             const cloudData = data.data as { agencies?: Agency[], currentAgencyId?: string };
             const cloudAgencies = cloudData.agencies;
             const cloudCurrentId = cloudData.currentAgencyId;
@@ -135,7 +162,6 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
                 if (cloudCurrentId) setCurrentAgencyId(cloudCurrentId);
             }
         } else {
-            // No cloud data — fall back to local storage
             loadFromLocalStorage();
         }
         setIsLoaded(true);
@@ -180,7 +206,12 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
                     setUserRole('admin');
                     loadFromSupabase(session.user.id);
                 } else {
-                    loadFromLocalStorage();
+                    const storedRole = localStorage.getItem(USER_ROLE_KEY);
+                    if (storedRole === 'reader') {
+                        loadAgenciesPublicly();
+                    } else {
+                        loadFromLocalStorage();
+                    }
                 }
             });
             subscription = sub;

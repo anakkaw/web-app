@@ -219,10 +219,10 @@ export default function Home() {
             <div className="mb-6 inline-block">
               <Logo size="lg" showText={false} className="animate-in zoom-in-50 duration-500" />
             </div>
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-orange-600 mb-2 drop-shadow-sm animate-in fade-in slide-in-from-left-2 transition-all">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-orange-600 mb-2 drop-shadow-sm animate-in fade-in slide-in-from-left-2 transition-all">
               ระบบบริหารจัดการโครงการ
             </h1>
-            <p className="text-stone-500 text-lg font-medium max-w-xl leading-relaxed">
+            <p className="text-stone-500 text-sm sm:text-lg font-medium max-w-xl leading-relaxed">
               ติดตามสถานะและงบประมาณของโครงการทั้งหมดในที่เดียว
             </p>
           </div>
@@ -514,22 +514,22 @@ export default function Home() {
                       <thead>
                         <tr className="border-b border-stone-200/60 bg-stone-50/80 backdrop-blur-sm">
                           <th className="h-12 px-2 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] w-[50px]"></th>
-                          <th className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px]">วันที่</th>
-                          <th onClick={() => requestSort('projectCode')} className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] cursor-pointer hover:text-orange-600 transition-colors group">
+                          <th className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] hidden md:table-cell">วันที่</th>
+                          <th onClick={() => requestSort('projectCode')} className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] cursor-pointer hover:text-orange-600 transition-colors group hidden lg:table-cell">
                             รหัส
                             <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-orange-600">{sortConfig?.key === 'projectCode' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
                           </th>
-                          <th className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px]">ชื่อโครงการ</th>
-                          <th className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center">สถานะ</th>
-                          <th onClick={() => requestSort('budget')} className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-right cursor-pointer hover:text-orange-600 transition-colors group">
+                          <th className="h-12 px-4 sm:px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px]">ชื่อโครงการ</th>
+                          <th className="h-12 px-4 sm:px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center">สถานะ</th>
+                          <th onClick={() => requestSort('budget')} className="h-12 px-4 sm:px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-right cursor-pointer hover:text-orange-600 transition-colors group">
                             งบประมาณ
                             <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-orange-600">{sortConfig?.key === 'budget' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
                           </th>
-                          <th onClick={() => requestSort('category')} className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center cursor-pointer hover:text-orange-600 transition-colors group">
+                          <th onClick={() => requestSort('category')} className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center cursor-pointer hover:text-orange-600 transition-colors group hidden sm:table-cell">
                             หมวดหมู่
                             <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-orange-600">{sortConfig?.key === 'category' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
                           </th>
-                          <th className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center">
+                          <th className="h-12 px-4 sm:px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center">
                             {userRole !== 'reader' && "จัดการ"}
                           </th>
                         </tr>
@@ -553,34 +553,36 @@ export default function Home() {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                   </Button>
                                 </td>
-                                <td className="px-6 py-3 align-middle text-stone-500 font-bold text-xs whitespace-nowrap">
+                                <td className="px-6 py-3 align-middle text-stone-500 font-bold text-xs whitespace-nowrap hidden md:table-cell">
                                   {project.activityDate ? new Date(project.activityDate).toLocaleDateString('th-TH', { year: '2-digit', month: 'short', day: 'numeric' }) : '-'}
                                 </td>
-                                <td className="px-6 py-3 align-middle  font-bold text-stone-400 text-xs">#{project.projectCode || "N/A"}</td>
-                                <td className="px-6 py-3 align-middle font-bold text-stone-900 text-sm">{project.name}</td>
-                                <td className="px-6 py-3 align-middle text-center">
-                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm ring-1 ring-inset
+                                <td className="px-6 py-3 align-middle  font-bold text-stone-400 text-xs hidden lg:table-cell">#{project.projectCode || "N/A"}</td>
+                                <td className="px-4 sm:px-6 py-3 align-middle font-bold text-stone-900 text-sm">{project.name}</td>
+                                <td className="px-4 sm:px-6 py-3 align-middle text-center">
+                                  <span className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-sm ring-1 ring-inset
                                   ${!project.progressLevel || project.progressLevel === 'Not Start' ? 'bg-stone-100 text-stone-600 ring-stone-300' : ''}
                                   ${project.progressLevel === 'Planning' ? 'bg-indigo-50 text-indigo-700 ring-indigo-200' : ''}
                                   ${project.progressLevel === 'In Progress' ? 'bg-blue-50 text-blue-700 ring-blue-200' : ''}
                                   ${project.progressLevel === 'Done' ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : ''}
                               `}>
-                                    <span className={`inline-block h-1.5 w-1.5 rounded-full mr-1
+                                    <span className={`inline-block h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full mr-1
                                       ${!project.progressLevel || project.progressLevel === 'Not Start' ? 'bg-stone-400' : ''}
                                       ${project.progressLevel === 'Planning' ? 'bg-indigo-500' : ''}
                                       ${project.progressLevel === 'In Progress' ? 'bg-blue-500' : ''}
                                       ${project.progressLevel === 'Done' ? 'bg-emerald-500' : ''}
                                     `} />
-                                    {{
-                                      'Not Start': 'ยังไม่เริ่ม',
-                                      'Planning': 'วางแผน',
-                                      'In Progress': 'กำลัง',
-                                      'Done': 'เสร็จ'
-                                    }[project.progressLevel || 'Not Start']}
+                                    <span className="hidden xs:inline">
+                                      {{
+                                        'Not Start': 'ยังไม่เริ่ม',
+                                        'Planning': 'วางแผน',
+                                        'In Progress': 'กำลัง',
+                                        'Done': 'เสร็จ'
+                                      }[project.progressLevel || 'Not Start']}
+                                    </span>
                                   </span>
                                 </td>
-                                <td className="px-6 py-3 align-middle text-right  font-black text-stone-700 text-sm">฿{project.budget.toLocaleString()}</td>
-                                <td className="px-6 py-3 align-middle text-center">
+                                <td className="px-4 sm:px-6 py-3 align-middle text-right  font-black text-stone-700 text-[13px] sm:text-sm whitespace-nowrap">฿{project.budget.toLocaleString()}</td>
+                                <td className="px-6 py-3 align-middle text-center hidden sm:table-cell">
                                   <span className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] font-bold border shadow-sm backdrop-blur-sm
                                   ${getCategoryColor(project.category || "อื่นๆ").lightBg}
                                   ${getCategoryColor(project.category || "อื่นๆ").lightText}
@@ -589,11 +591,11 @@ export default function Home() {
                                     {project.category || "อื่นๆ"}
                                   </span>
                                 </td>
-                                <td className="px-6 py-3 align-middle text-center">
+                                <td className="px-4 sm:px-6 py-3 align-middle text-center">
                                   <div className="flex items-center justify-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-stone-400 hover:text-stone-900 hover:bg-white hover:shadow-sm rounded-lg transition-all" asChild>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-stone-400 hover:text-stone-900 hover:bg-white hover:shadow-sm rounded-lg transition-all" asChild>
                                       <Link href={`/projects/detail?id=${project.id}`}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
                                       </Link>
                                     </Button>
                                     {userRole !== 'reader' && (
@@ -642,46 +644,47 @@ export default function Home() {
                                             <table className="w-full text-sm text-left">
                                               <thead>
                                                 <tr className="bg-stone-50 border-b border-stone-100 text-xs text-stone-400 font-bold uppercase tracking-wider">
-                                                  <th className="px-6 py-3 text-center w-[5%]">#</th>
-                                                  <th className="px-6 py-3 w-[45%]">รายการ</th>
-                                                  <th className="px-6 py-3 text-right w-[10%]">ปริมาณ</th>
-                                                  <th className="px-6 py-3 text-center w-[10%]">หน่วย</th>
-                                                  <th className="px-6 py-3 text-right w-[15%]">ราคา/หน่วย</th>
-                                                  <th className="px-6 py-3 text-right w-[15%]">รวม</th>
+                                                  <th className="px-3 sm:px-6 py-3 text-center w-[5%]">#</th>
+                                                  <th className="px-3 sm:px-6 py-3 w-[45%]">รายการ</th>
+                                                  <th className="px-3 sm:px-6 py-3 text-right w-[10%] hidden sm:table-cell">ปริมาณ</th>
+                                                  <th className="px-3 sm:px-6 py-3 text-center w-[10%] hidden sm:table-cell">หน่วย</th>
+                                                  <th className="px-3 sm:px-6 py-3 text-right w-[15%] hidden sm:table-cell">ราคา/หน่วย</th>
+                                                  <th className="px-3 sm:px-6 py-3 text-right w-[15%]">รวม</th>
                                                 </tr>
                                               </thead>
                                               <tbody className="divide-y divide-stone-100">
                                                 {(project.wbs || []).map((item, idx) => {
                                                   const itemTotal = item.quantity * item.unitPrice;
-                                                  // Calculate percentage of total budget for the progress bar
-                                                  // Use project budget or sum of WBS as base? Usually project budget.
-                                                  // Verify totalWBS is calculated correctly above.
                                                   const percent = totalWBS > 0 ? (itemTotal / totalWBS) * 100 : 0;
 
                                                   return (
                                                     <tr key={item.id || idx} className="hover:bg-stone-50/80 transition-colors group">
-                                                      <td className="px-6 py-4 text-center text-stone-300 font-bold">{idx + 1}</td>
-                                                      <td className="px-6 py-4">
-                                                        <div className="space-y-2">
-                                                          <span className="text-stone-800 font-bold text-sm block">{item.description}</span>
-                                                          <div className="w-full bg-stone-100 rounded-full h-1.5 overflow-hidden">
+                                                      <td className="px-3 sm:px-6 py-4 text-center text-stone-300 font-bold text-xs sm:text-sm">{idx + 1}</td>
+                                                      <td className="px-3 sm:px-6 py-4">
+                                                        <div className="space-y-1.5">
+                                                          <span className="text-stone-800 font-bold text-xs sm:text-sm block leading-tight">{item.description}</span>
+                                                          <div className="sm:hidden text-[10px] text-stone-400 font-bold">
+                                                            {item.quantity} {item.unit} x ฿{item.unitPrice.toLocaleString()}
+                                                          </div>
+                                                          <div className="w-full bg-stone-100 rounded-full h-1 sm:h-1.5 overflow-hidden">
                                                             <div
-                                                              className="bg-orange-600 h-1.5 rounded-full transition-all duration-500"
+                                                              className="bg-orange-600 h-full rounded-full transition-all duration-500"
                                                               style={{ width: `${Math.min(percent, 100)}%` }}
                                                             />
                                                           </div>
                                                         </div>
                                                       </td>
-                                                      <td className="px-6 py-4 text-right font-bold text-stone-700">{item.quantity.toLocaleString()}</td>
-                                                      <td className="px-6 py-4 text-center font-medium text-stone-500 text-xs">{item.unit}</td>
-                                                      <td className="px-6 py-4 text-right font-bold text-stone-700">{item.unitPrice.toLocaleString()}</td>
-                                                      <td className="px-6 py-4 text-right font-black text-stone-800 text-base">฿{itemTotal.toLocaleString()}</td>
+                                                      <td className="px-6 py-4 text-right font-bold text-stone-700 hidden sm:table-cell">{item.quantity.toLocaleString()}</td>
+                                                      <td className="px-6 py-4 text-center font-medium text-stone-500 text-xs hidden sm:table-cell">{item.unit}</td>
+                                                      <td className="px-6 py-4 text-right font-bold text-stone-700 hidden sm:table-cell">{item.unitPrice.toLocaleString()}</td>
+                                                      <td className="px-3 sm:px-6 py-4 text-right font-black text-stone-800 text-sm sm:text-base">฿{itemTotal.toLocaleString()}</td>
                                                     </tr>
                                                   );
                                                 })}
                                                 <tr className="bg-stone-50/50 border-t-2 border-stone-100">
-                                                  <td colSpan={5} className="px-6 py-4 text-right font-black text-stone-500 text-xs uppercase tracking-wider">รวมทั้งหมด</td>
-                                                  <td className="px-6 py-4 text-right font-black text-stone-900 text-lg">฿{totalWBS.toLocaleString()}</td>
+                                                  <td colSpan={2} className="px-3 sm:px-6 py-4 text-left sm:text-right font-black text-stone-500 text-[10px] uppercase tracking-wider">รวมทั้งหมด</td>
+                                                  <td colSpan={3} className="hidden sm:table-cell"></td>
+                                                  <td className="px-3 sm:px-6 py-4 text-right font-black text-stone-900 text-sm sm:text-lg whitespace-nowrap">฿{totalWBS.toLocaleString()}</td>
                                                 </tr>
                                               </tbody>
                                             </table>
