@@ -199,50 +199,57 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const loadFromLocalStorage = () => {
-        const storedAgencies = localStorage.getItem(AGENCIES_STORAGE_KEY);
-        const storedCurrentId = localStorage.getItem(CURRENT_AGENCY_ID_KEY);
+        try {
+            console.log("Loading from local storage...");
+            const storedAgencies = localStorage.getItem(AGENCIES_STORAGE_KEY);
+            const storedCurrentId = localStorage.getItem(CURRENT_AGENCY_ID_KEY);
 
-        if (storedAgencies) {
-            try {
-                const parsed = JSON.parse(storedAgencies);
-                setAgencies(parsed);
-                if (storedCurrentId) {
-                    setCurrentAgencyId(storedCurrentId);
-                } else if (parsed.length > 0) {
-                    setCurrentAgencyId(parsed[0].id);
+            if (storedAgencies) {
+                try {
+                    const parsed = JSON.parse(storedAgencies);
+                    setAgencies(parsed);
+                    if (storedCurrentId) {
+                        setCurrentAgencyId(storedCurrentId);
+                    } else if (parsed.length > 0) {
+                        setCurrentAgencyId(parsed[0].id);
+                    }
+                } catch (error) {
+                    console.error("Failed to parse agencies:", error);
                 }
-            } catch (error) {
-                console.error("Failed to parse agencies:", error);
-            }
-        } else {
-            // Check for legacy data to migrate
-            const legacyProjects = localStorage.getItem(LEGACY_PROJECTS_KEY);
-            const legacyCategories = localStorage.getItem(LEGACY_CATEGORIES_KEY);
-            const legacyBudget = localStorage.getItem(LEGACY_BUDGET_KEY);
-
-            if (legacyProjects || legacyCategories || legacyBudget) {
-                const initialAgency: Agency = {
-                    id: "default-agency",
-                    name: "หน่วยงานเริ่มต้น",
-                    projects: legacyProjects ? JSON.parse(legacyProjects) : defaultProjects,
-                    categories: legacyCategories ? JSON.parse(legacyCategories) : defaultCategories,
-                    totalAllocatedBudget: legacyBudget ? parseFloat(legacyBudget) : 100000000,
-                };
-                setAgencies([initialAgency]);
-                setCurrentAgencyId(initialAgency.id);
             } else {
-                const initialAgency: Agency = {
-                    id: "default-agency",
-                    name: "หน่วยงานเริ่มต้น",
-                    projects: defaultProjects,
-                    categories: defaultCategories,
-                    totalAllocatedBudget: 100000000,
-                };
-                setAgencies([initialAgency]);
-                setCurrentAgencyId(initialAgency.id);
+                // Check for legacy data to migrate
+                const legacyProjects = localStorage.getItem(LEGACY_PROJECTS_KEY);
+                const legacyCategories = localStorage.getItem(LEGACY_CATEGORIES_KEY);
+                const legacyBudget = localStorage.getItem(LEGACY_BUDGET_KEY);
+
+                if (legacyProjects || legacyCategories || legacyBudget) {
+                    const initialAgency: Agency = {
+                        id: "default-agency",
+                        name: "หน่วยงานเริ่มต้น",
+                        projects: legacyProjects ? JSON.parse(legacyProjects) : defaultProjects,
+                        categories: legacyCategories ? JSON.parse(legacyCategories) : defaultCategories,
+                        totalAllocatedBudget: legacyBudget ? parseFloat(legacyBudget) : 100000000,
+                    };
+                    setAgencies([initialAgency]);
+                    setCurrentAgencyId(initialAgency.id);
+                } else {
+                    const initialAgency: Agency = {
+                        id: "default-agency",
+                        name: "หน่วยงานเริ่มต้น",
+                        projects: defaultProjects,
+                        categories: defaultCategories,
+                        totalAllocatedBudget: 100000000,
+                    };
+                    setAgencies([initialAgency]);
+                    setCurrentAgencyId(initialAgency.id);
+                }
             }
+        } catch (e) {
+            console.error("Error loading from local storage:", e);
+        } finally {
+            console.log("Setting isLoaded to true");
+            setIsLoaded(true);
         }
-        setIsLoaded(true);
     };
 
 

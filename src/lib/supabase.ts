@@ -8,7 +8,11 @@ if (!supabaseUrl || !supabaseKey) {
     console.warn('Missing Supabase environment variables')
 }
 
+// Safe initialization
+const internalSupabaseUrl = supabaseUrl || 'https://placeholder.supabase.co';
+const internalSupabaseKey = supabaseKey || 'placeholder';
+
 export const supabase = createClient(
-    supabaseUrl || '',
-    supabaseKey || ''
-)
+    internalSupabaseUrl,
+    internalSupabaseKey
+);
