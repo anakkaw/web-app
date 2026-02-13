@@ -19,10 +19,14 @@ export function AgencyModal({
     isOpen: boolean;
     onClose: () => void;
 }) {
-    const { agencies, currentAgencyId, addAgency, switchAgency, deleteAgency, updateAgencyName } = useProjects();
+    const { agencies, currentAgencyId, addAgency, switchAgency, deleteAgency, updateAgencyName, updateAgencyPasscode } = useProjects();
     const [newAgencyName, setNewAgencyName] = useState("");
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState("");
+
+    // New state for passcode editing
+    const [editingPasscodeId, setEditingPasscodeId] = useState<string | null>(null);
+    const [editingPasscodeValue, setEditingPasscodeValue] = useState("");
 
     if (!isOpen) return null;
 
@@ -40,6 +44,12 @@ export function AgencyModal({
             updateAgencyName(id, editingName.trim());
             setEditingId(null);
         }
+    };
+
+    const handlePasscodeSave = (id: string) => {
+        updateAgencyPasscode(id, editingPasscodeValue.trim());
+        setEditingPasscodeId(null);
+        setEditingPasscodeValue("");
     };
 
     const handleDeleteClick = (id: string) => {
@@ -107,16 +117,50 @@ export function AgencyModal({
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
                                             </Button>
                                         </div>
+                                    ) : editingPasscodeId === agency.id ? (
+                                        <div className="flex flex-1 gap-2 items-center">
+                                            <span className="text-xs font-bold text-stone-400">Code:</span>
+                                            <Input
+                                                className="h-8 flex-1 font-bold text-sm"
+                                                placeholder="Set passcode..."
+                                                value={editingPasscodeValue}
+                                                onChange={(e) => setEditingPasscodeValue(e.target.value)}
+                                                autoFocus
+                                            />
+                                            <Button size="icon" className="h-8 w-8 bg-blue-600 hover:bg-blue-700 text-white" onClick={() => handlePasscodeSave(agency.id)}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                                            </Button>
+                                        </div>
                                     ) : (
-                                        <span className={`text-sm font-black ${currentAgencyId === agency.id ? "text-orange-900" : "text-stone-700"}`}>
-                                            {agency.name}
-                                        </span>
+                                        <div className="flex flex-col">
+                                            <span className={`text-sm font-black ${currentAgencyId === agency.id ? "text-orange-900" : "text-stone-700"}`}>
+                                                {agency.name}
+                                            </span>
+                                            {agency.passcode && (
+                                                <span className="text-[10px] text-stone-400 font-mono flex items-center gap-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg>
+                                                    {agency.passcode}
+                                                </span>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
 
                                 <div className="flex items-center gap-1">
-                                    {editingId !== agency.id && (
+                                    {editingId !== agency.id && editingPasscodeId !== agency.id && (
                                         <>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                title="Set Passcode"
+                                                className="h-9 w-9 text-stone-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-all"
+                                                onClick={() => {
+                                                    setEditingPasscodeId(agency.id);
+                                                    setEditingPasscodeValue(agency.passcode || "");
+                                                }}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg>
+                                            </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
