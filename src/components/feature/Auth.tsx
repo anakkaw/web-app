@@ -11,13 +11,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRouter } from "next/navigation"
 
 export default function Auth({ onAuthSuccess }: { onAuthSuccess?: () => void }) {
-    const { loginAsReader, loginAsDemoAdmin } = useProjects()
+    const { loginAsReader, loginAsDemoAdmin, agencies } = useProjects()
     const [loading, setLoading] = useState(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passcode, setPasscode] = useState('')
     const [activeTab, setActiveTab] = useState<'reader' | 'admin'>('reader')
     const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+    const [selectedAgencyId, setSelectedAgencyId] = useState<string | null>(null)
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null)
 
     const handleReaderLogin = async (e: React.FormEvent) => {
@@ -25,11 +26,11 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess?: () => void }) 
         setLoading(true)
         setMessage(null)
         try {
-            const success = loginAsReader(passcode)
+            const success = loginAsReader(passcode, selectedAgencyId || undefined)
             if (success) {
                 if (onAuthSuccess) onAuthSuccess()
             } else {
-                throw new Error('รหัสผ่านไม่ถูกต้อง (ลองใช้ 1234 หรือ 9999)')
+                throw new Error('รหัสผ่านไม่ถูกต้อง')
             }
         } catch (error: any) {
             setMessage({ text: error.message, type: 'error' })
@@ -132,32 +133,75 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess?: () => void }) 
 
                     <CardContent className="p-8">
                         <TabsContent value="reader" className="space-y-6 mt-0 animate-in slide-in-from-right-4 duration-300">
-                            <div className="text-center space-y-2 mb-6">
-                                <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
-                                </div>
-                                <h2 className="text-2xl font-black text-stone-800">เข้าชมข้อมูลโครงการ</h2>
-                                <p className="text-stone-500 font-medium">กรอกรหัสผ่านเพื่อเข้าถึงข้อมูลในโหมดอ่านอย่างเดียว</p>
-                            </div>
+                            {!selectedAgencyId ? (
+                                <>
+                                    <div className="text-center space-y-2 mb-4">
+                                        <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18" /><path d="M5 21V7l8-4 8 4v14" /><path d="M17 21v-8.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0-.5.5V21" /></svg>
+                                        </div>
+                                        <h2 className="text-2xl font-black text-stone-800">เลือกหน่วยงาน</h2>
+                                        <p className="text-stone-500 font-medium">กรุณาเลือกหน่วยงานที่ต้องการเข้าชม</p>
+                                    </div>
 
-                            <form onSubmit={handleReaderLogin} className="space-y-4">
-                                <Input
-                                    type="password"
-                                    placeholder="รหัสผ่านเข้าชม (เช่น 9999)"
-                                    value={passcode}
-                                    onChange={(e) => setPasscode(e.target.value)}
-                                    required
-                                    className="h-14 font-black text-center text-2xl tracking-[0.5em] bg-stone-50 border-stone-200 focus:border-orange-500 focus:ring-orange-500/20 transition-all rounded-xl placeholder:tracking-normal placeholder:text-base placeholder:font-medium"
-                                    autoFocus
-                                />
-                                <Button
-                                    type="submit"
-                                    className="w-full h-12 bg-orange-600 hover:bg-orange-700 text-white font-black text-lg rounded-xl shadow-lg shadow-orange-600/20 hover:shadow-orange-600/30 transition-all hover:-translate-y-0.5"
-                                    disabled={loading}
-                                >
-                                    {loading ? 'กำลังตรวจสอบ...' : 'เข้าใช้งาน'}
-                                </Button>
-                            </form>
+                                    <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                                        {agencies.map(agency => (
+                                            <div
+                                                key={agency.id}
+                                                onClick={() => setSelectedAgencyId(agency.id)}
+                                                className="flex items-center justify-between p-4 rounded-xl border border-stone-200 bg-white hover:border-orange-500 hover:shadow-md cursor-pointer transition-all group"
+                                            >
+                                                <span className="font-bold text-stone-700 group-hover:text-orange-700">{agency.name}</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-300 group-hover:text-orange-500 transition-colors"><path d="m9 18 6-6-6-6" /></svg>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="text-center space-y-2 mb-6">
+                                        <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                                        </div>
+                                        <h2 className="text-2xl font-black text-stone-800">
+                                            {agencies.find(a => a.id === selectedAgencyId)?.name || 'เข้าชมข้อมูลโครงการ'}
+                                        </h2>
+                                        <p className="text-stone-500 font-medium">กรอกรหัสผ่านเพื่อเข้าถึงข้อมูล</p>
+                                    </div>
+
+                                    <form onSubmit={handleReaderLogin} className="space-y-4">
+                                        <Input
+                                            type="password"
+                                            placeholder="รหัสผ่านเข้าชม"
+                                            value={passcode}
+                                            onChange={(e) => setPasscode(e.target.value)}
+                                            required
+                                            className="h-14 font-black text-center text-2xl tracking-[0.5em] bg-stone-50 border-stone-200 focus:border-orange-500 focus:ring-orange-500/20 transition-all rounded-xl placeholder:tracking-normal placeholder:text-base placeholder:font-medium"
+                                            autoFocus
+                                        />
+                                        <div className="flex gap-3">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                className="h-12 w-14 border-stone-200 text-stone-500 hover:text-stone-800"
+                                                onClick={() => {
+                                                    setSelectedAgencyId(null);
+                                                    setPasscode("");
+                                                    setMessage(null);
+                                                }}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                                            </Button>
+                                            <Button
+                                                type="submit"
+                                                className="flex-1 h-12 bg-orange-600 hover:bg-orange-700 text-white font-black text-lg rounded-xl shadow-lg shadow-orange-600/20 hover:shadow-orange-600/30 transition-all hover:-translate-y-0.5"
+                                                disabled={loading}
+                                            >
+                                                {loading ? 'กำลังตรวจสอบ...' : 'เข้าใช้งาน'}
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </>
+                            )}
                         </TabsContent>
 
                         <TabsContent value="admin" className="space-y-6 mt-0 animate-in slide-in-from-left-4 duration-300">

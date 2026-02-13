@@ -64,7 +64,7 @@ interface ProjectContextType {
     resetAllProjectDates: () => void;
     // Reader Mode
     userRole: 'admin' | 'reader' | 'guest';
-    loginAsReader: (passcode: string) => boolean;
+    loginAsReader: (passcode: string, agencyId?: string) => boolean;
     loginAsDemoAdmin: () => void;
     logout: () => void;
     isAuthenticated: boolean;
@@ -450,8 +450,20 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         ));
     };
 
-    const loginAsReader = (passcode: string): boolean => {
-        // 1. Check if it matches any agency's passcode
+    const loginAsReader = (passcode: string, agencyId?: string): boolean => {
+        // 1. If agencyId is provided, check specifically that agency
+        if (agencyId) {
+            const targetAgency = agencies.find(a => a.id === agencyId);
+            if (targetAgency && targetAgency.passcode === passcode) {
+                setUserRole('reader');
+                localStorage.setItem(USER_ROLE_KEY, 'reader');
+                setCurrentAgencyId(targetAgency.id);
+                return true;
+            }
+            return false;
+        }
+
+        // 2. Fallback: Check if it matches ANY agency's passcode (Legacy behavior)
         const targetAgency = agencies.find(a => a.passcode === passcode);
 
         if (targetAgency) {
@@ -460,12 +472,6 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             setCurrentAgencyId(targetAgency.id); // Switch to that agency
             return true;
         }
-
-        // 2. Fallback: Check hardcoded defaults or legacy global code if absolutely needed
-        // For now, let's keep '1234' as a master fallback for testing if desired, or remove it for strictness.
-        // User asked for "code for each agency", so we rely on that. 
-        // We'll keep 'demo1234' as a global reader fail-safe? No, 'demo1234' is admin.
-
 
         return false;
     };
