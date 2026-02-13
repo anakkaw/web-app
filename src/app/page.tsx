@@ -581,7 +581,7 @@ export default function Home() {
                                     </span>
                                   </span>
                                 </td>
-                                <td className="px-4 sm:px-6 py-3 align-middle text-right  font-black text-stone-700 text-[13px] sm:text-sm whitespace-nowrap">฿{project.budget.toLocaleString()}</td>
+                                <td className="px-4 sm:px-6 py-3 align-middle text-right  font-black text-stone-700 text-[13px] sm:text-sm whitespace-nowrap">฿{(project.budget || 0).toLocaleString()}</td>
                                 <td className="px-6 py-3 align-middle text-center hidden sm:table-cell">
                                   <span className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] font-bold border shadow-sm backdrop-blur-sm
                                   ${getCategoryColor(project.category || "อื่นๆ").lightBg}

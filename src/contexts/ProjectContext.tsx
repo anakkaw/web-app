@@ -187,40 +187,45 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         let timer: NodeJS.Timeout | null = null;
 
         const initSupabase = async () => {
-            const { supabase } = await import("@/lib/supabase");
-            const { data: { session } } = await supabase.auth.getSession();
+            try {
+                const { supabase } = await import("@/lib/supabase");
+                const { data: { session } } = await supabase.auth.getSession();
 
-            setSession(session);
-            if (session) {
-                setUserRole('admin');
-                loadFromSupabase(session.user.id);
-            }
-
-            const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_event, session) => {
                 setSession(session);
                 if (session) {
-                    // Safety check: if we are in demo mode, do NOT switch to Supabase user
-                    if (typeof window !== 'undefined' && localStorage.getItem(DEMO_MODE_KEY) === 'true') {
-                        return;
-                    }
                     setUserRole('admin');
                     loadFromSupabase(session.user.id);
-                } else {
-                    const storedRole = localStorage.getItem(USER_ROLE_KEY);
-                    if (storedRole === 'reader') {
-                        loadAgenciesPublicly();
-                    } else {
-                        loadFromLocalStorage();
-                    }
                 }
-            });
-            subscription = sub;
 
-            // Failsafe: Force load after 2 seconds
-            timer = setTimeout(() => {
-                console.warn("Force loading due to timeout");
-                setIsLoaded(true);
-            }, 2000);
+                const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_event, session) => {
+                    setSession(session);
+                    if (session) {
+                        // Safety check: if we are in demo mode, do NOT switch to Supabase user
+                        if (typeof window !== 'undefined' && localStorage.getItem(DEMO_MODE_KEY) === 'true') {
+                            return;
+                        }
+                        setUserRole('admin');
+                        loadFromSupabase(session.user.id);
+                    } else {
+                        const storedRole = localStorage.getItem(USER_ROLE_KEY);
+                        if (storedRole === 'reader') {
+                            loadAgenciesPublicly();
+                        } else {
+                            loadFromLocalStorage();
+                        }
+                    }
+                });
+                subscription = sub;
+
+                // Failsafe: Force load after 2 seconds
+                timer = setTimeout(() => {
+                    console.warn("Force loading due to timeout");
+                    setIsLoaded(true);
+                }, 2000);
+            } catch (err) {
+                console.error("Supabase init error:", err);
+                loadFromLocalStorage();
+            }
         };
 
         initSupabase();
