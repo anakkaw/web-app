@@ -20,9 +20,11 @@ type WBSItem = {
 export function WBS({
     items,
     onItemsChange,
+    readOnly = false,
 }: {
     items: WBSItem[];
     onItemsChange: (items: WBSItem[]) => void;
+    readOnly?: boolean;
 }) {
     const calculateTotal = (items: WBSItem[]) => {
         return items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
@@ -35,6 +37,7 @@ export function WBS({
         field: keyof WBSItem,
         value: string | number
     ) => {
+        if (readOnly) return;
         onItemsChange(
             items.map((item) => {
                 if (item.id !== itemId) return item;
@@ -44,11 +47,13 @@ export function WBS({
     };
 
     const deleteItem = (itemId: string) => {
+        if (readOnly) return;
         if (!confirm("คุณต้องการลบรายการนี้ใช่หรือไม่?")) return;
         onItemsChange(items.filter((item) => item.id !== itemId));
     };
 
     const addItem = () => {
+        if (readOnly) return;
         const newItem: WBSItem = {
             id: Date.now().toString(),
             description: "รายการใหม่",
@@ -119,7 +124,8 @@ export function WBS({
                                                     onChange={(e) =>
                                                         updateItem(item.id, "description", e.target.value)
                                                     }
-                                                    className="h-9 border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 font-bold text-base"
+                                                    readOnly={readOnly}
+                                                    className={`h-9 border-transparent bg-transparent ${!readOnly ? 'hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500' : ''} px-2 shadow-none transition-all text-stone-900 font-bold text-base`}
                                                     placeholder="ระบุรายการ..."
                                                 />
                                                 <div className="px-2">
@@ -143,7 +149,8 @@ export function WBS({
                                                         e.target.value === '' ? 0 : parseFloat(e.target.value)
                                                     )
                                                 }
-                                                className="h-9 text-right  font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 text-base"
+                                                readOnly={readOnly}
+                                                className={`h-9 text-right font-bold border-transparent bg-transparent ${!readOnly ? 'hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500' : ''} px-2 shadow-none transition-all text-stone-900 text-base`}
                                             />
                                         </td>
                                         <td className="px-2 py-1.5">
@@ -152,7 +159,8 @@ export function WBS({
                                                 onChange={(e) =>
                                                     updateItem(item.id, "unit", e.target.value)
                                                 }
-                                                className="h-9 text-center font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 text-sm"
+                                                readOnly={readOnly}
+                                                className={`h-9 text-center font-bold border-transparent bg-transparent ${!readOnly ? 'hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500' : ''} px-2 shadow-none transition-all text-stone-900 text-sm`}
                                                 placeholder="-"
                                             />
                                         </td>
@@ -167,21 +175,24 @@ export function WBS({
                                                         e.target.value === '' ? 0 : parseFloat(e.target.value)
                                                     )
                                                 }
-                                                className="h-9 text-right  font-bold border-transparent bg-transparent hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500 px-2 shadow-none transition-all text-stone-900 text-base"
+                                                readOnly={readOnly}
+                                                className={`h-9 text-right font-bold border-transparent bg-transparent ${!readOnly ? 'hover:bg-white hover:border-stone-200 focus:bg-white focus:border-orange-500' : ''} px-2 shadow-none transition-all text-stone-900 text-base`}
                                             />
                                         </td>
-                                        <td className="px-4 py-1.5 text-right  font-black text-stone-600 text-base">
+                                        <td className="px-4 py-1.5 text-right font-black text-stone-600 text-base">
                                             ฿{(item.quantity * item.unitPrice).toLocaleString()}
                                         </td>
                                         <td className="px-4 py-2 text-center">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                                                onClick={() => deleteItem(item.id)}
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
-                                            </Button>
+                                            {!readOnly && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                                    onClick={() => deleteItem(item.id)}
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                                                </Button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
@@ -189,7 +200,7 @@ export function WBS({
                                     <tr>
                                         <td colSpan={7} className="py-20 text-center text-stone-400 bg-[#fafaf9]">
                                             <p className="font-bold text-lg">ยังไม่มีรายการ</p>
-                                            <p className="text-sm mt-1">กดปุ่ม &quot;+ เพิ่มรายการ&quot; เพื่อเริ่มบันทึกข้อมูล</p>
+                                            <p className="text-sm mt-1">{readOnly ? "ไม่มีรายการในโครงการนี้" : "กดปุ่ม \"+ เพิ่มรายการ\" เพื่อเริ่มบันทึกข้อมูล"}</p>
                                         </td>
                                     </tr>
                                 )}
@@ -202,14 +213,16 @@ export function WBS({
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
                             Export CSV
                         </Button>
-                        <Button
-                            variant="default"
-                            className="bg-orange-500 hover:bg-orange-600 text-white gap-2 shadow-[0_10px_15px_-3px_rgba(249,115,22,0.2)] font-black px-8"
-                            onClick={addItem}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
-                            เพิ่มรายการ
-                        </Button>
+                        {!readOnly && (
+                            <Button
+                                variant="default"
+                                className="bg-orange-500 hover:bg-orange-600 text-white gap-2 shadow-[0_10px_15px_-3px_rgba(249,115,22,0.2)] font-black px-8"
+                                onClick={addItem}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+                                เพิ่มรายการ
+                            </Button>
+                        )}
                     </div>
                 </div>
 

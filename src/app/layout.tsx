@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Prompt } from "next/font/google"; // Import fonts
+import { Inter, IBM_Plex_Sans_Thai } from "next/font/google"; // Import fonts
 import "./globals.css";
 import { ProjectProvider } from "@/contexts/ProjectContext";
 
@@ -10,15 +10,15 @@ const inter = Inter({
   display: "swap",
 });
 
-const prompt = Prompt({
-  weight: ["100", "300", "400", "500", "700", "900"],
+const ibmPlexThai = IBM_Plex_Sans_Thai({
+  weight: ["100", "200", "300", "400", "500", "600", "700"],
   subsets: ["latin", "thai"],
-  variable: "--font-prompt",
+  variable: "--font-ibm-plex-thai",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "ระบบคำนวณงบประมาณโครงการ",
+  title: "ระบบบริหารจัดการโครงการ",
   description: "Web application for project cost estimation",
 };
 
@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={`${prompt.variable} ${inter.variable} font-sans antialiased`}>
+      <body className={`${ibmPlexThai.variable} ${inter.variable} font-sans antialiased`}>
         <ProjectProvider>
           {children}
         </ProjectProvider>

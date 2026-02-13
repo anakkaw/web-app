@@ -24,7 +24,8 @@ function ProjectDetailContent() {
     const searchParams = useSearchParams();
     const paramId = searchParams.get("id");
     const projectId = paramId ? parseInt(paramId) : null;
-    const { projects, updateProject, categories } = useProjects();
+    const { projects, updateProject, categories, userRole } = useProjects();
+    const isReadOnly = userRole === 'reader';
 
     const project = projects.find((p) => p.id === projectId);
 
@@ -121,7 +122,22 @@ function ProjectDetailContent() {
     ]);
 
     if (!project || projectId === null) {
-        return <div>Project not found</div>;
+        return (
+            <div className="min-h-screen bg-[#fffcfb] font-sans">
+                <Navbar />
+                <div className="flex flex-col items-center justify-center py-24 animate-page-enter">
+                    <div className="inline-flex items-center justify-center p-5 bg-stone-100 rounded-full mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="9" x2="15" y1="15" y2="15" /></svg>
+                    </div>
+                    <h2 className="text-xl font-black text-stone-700 mb-2">ไม่พบโครงการ</h2>
+                    <p className="text-stone-400 font-medium mb-6">โครงการที่คุณกำลังค้นหาอาจถูกลบหรือไม่มีอยู่</p>
+                    <a href="/" className="inline-flex items-center gap-2 px-5 py-2 bg-stone-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                        กลับหน้าหลัก
+                    </a>
+                </div>
+            </div>
+        );
     }
 
     // Derived state for UI consistency
@@ -157,7 +173,7 @@ function ProjectDetailContent() {
         <div className="min-h-screen bg-[#fffcfb] pb-20 font-sans">
             <Navbar />
 
-            <main className="app-container px-4 py-6 lg:px-8 max-w-5xl mx-auto animation-in slide-in-from-bottom-4 duration-700 fade-in">
+            <main className="app-container px-4 py-6 lg:px-8 max-w-5xl mx-auto animate-page-enter">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
                     <div className="space-y-1 flex-1">
@@ -168,6 +184,14 @@ function ProjectDetailContent() {
                             </Link>
                             <span className="text-stone-300">/</span>
                             <span>รายละเอียดโครงการ</span>
+                            {autoSaveStatus !== 'idle' && (
+                                <span className={`ml-auto inline-flex items-center gap-1.5 text-xs font-bold ${autoSaveStatus === 'saving' ? 'text-orange-500 animate-save-pulse' : 'text-emerald-500'
+                                    }`}>
+                                    <span className={`h-1.5 w-1.5 rounded-full ${autoSaveStatus === 'saving' ? 'bg-orange-500' : 'bg-emerald-500'
+                                        }`} />
+                                    {autoSaveStatus === 'saving' ? 'กำลังบันทึก...' : 'บันทึกแล้ว'}
+                                </span>
+                            )}
                         </div>
                         <div className="flex items-start gap-4 flex-wrap">
                             <div className="flex-1 min-w-[200px]">
@@ -182,8 +206,8 @@ function ProjectDetailContent() {
                                     />
                                 ) : (
                                     <h1
-                                        onClick={() => setIsEditingTitle(true)}
-                                        className="text-2xl md:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-500 hover:from-orange-600 to-amber-600 hover:to-amber-700 leading-tight cursor-pointer hover:opacity-80 transition-all flex items-center gap-3 select-none"
+                                        onClick={() => !isReadOnly && setIsEditingTitle(true)}
+                                        className={`text-2xl md:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-500 hover:from-orange-600 to-amber-600 hover:to-amber-700 leading-tight ${!isReadOnly ? 'cursor-pointer hover:opacity-80' : ''} transition-all flex items-center gap-3 select-none`}
                                     >
                                         {formData.name || "ชื่อโครงการ..."}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-300 opacity-0 group-hover:opacity-100 transition-opacity"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
@@ -204,8 +228,8 @@ function ProjectDetailContent() {
                                     />
                                 ) : (
                                     <div
-                                        onClick={() => setIsEditingCode(true)}
-                                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-100 border border-stone-200 hover:bg-white hover:border-orange-300 hover:shadow-sm cursor-pointer transition-all group"
+                                        onClick={() => !isReadOnly && setIsEditingCode(true)}
+                                        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-100 border border-stone-200 ${!isReadOnly ? 'hover:bg-white hover:border-orange-300 hover:shadow-sm cursor-pointer' : ''} transition-all group`}
                                     >
                                         <span className="text-xs font-bold text-stone-500">รหัสโครงการ</span>
                                         <div className="flex items-center gap-1">
@@ -257,7 +281,8 @@ function ProjectDetailContent() {
                                 <select
                                     value={formData.progressLevel || 'Not Start'}
                                     onChange={(e) => handleChange('progressLevel', e.target.value)}
-                                    className="w-full bg-transparent text-2xl font-medium text-white border-none focus:ring-0 cursor-pointer appearance-none p-0"
+                                    disabled={isReadOnly}
+                                    className={`w-full bg-transparent text-2xl font-medium text-white border-none focus:ring-0 appearance-none p-0 ${!isReadOnly ? 'cursor-pointer' : 'cursor-default'}`}
                                 >
                                     <option value="Not Start" className="text-stone-900">ยังไม่เริ่ม</option>
                                     <option value="Planning" className="text-stone-900">วางแผน</option>
@@ -283,7 +308,8 @@ function ProjectDetailContent() {
                                 <select
                                     value={formData.category}
                                     onChange={(e) => handleChange('category', e.target.value)}
-                                    className="w-full bg-transparent text-2xl font-medium text-white border-none focus:ring-0 cursor-pointer appearance-none p-0"
+                                    disabled={isReadOnly}
+                                    className={`w-full bg-transparent text-2xl font-medium text-white border-none focus:ring-0 appearance-none p-0 ${!isReadOnly ? 'cursor-pointer' : 'cursor-default'}`}
                                 >
                                     <option value="อื่นๆ" className="text-stone-900">อื่นๆ</option>
                                     {categories.map((c) => (
@@ -309,8 +335,9 @@ function ProjectDetailContent() {
                             <Input
                                 value={formData.owner}
                                 onChange={(e) => handleChange('owner', e.target.value)}
-                                className="h-10 text-lg font-bold border-transparent -ml-2 hover:bg-stone-50 focus:bg-white focus:border-orange-500 transition-all shadow-none"
-                                placeholder="ระบุชื่อเจ้าของ"
+                                readOnly={isReadOnly}
+                                className={`h-10 text-lg font-bold border-transparent -ml-2 ${!isReadOnly ? 'hover:bg-stone-50 focus:bg-white focus:border-orange-500' : 'bg-transparent'} transition-all shadow-none`}
+                                placeholder={isReadOnly ? "-" : "ระบุชื่อเจ้าของ"}
                             />
                         </CardContent>
                     </Card>
@@ -325,8 +352,9 @@ function ProjectDetailContent() {
                             <Input
                                 value={formData.location}
                                 onChange={(e) => handleChange('location', e.target.value)}
-                                className="h-10 text-lg font-bold border-transparent -ml-2 hover:bg-stone-50 focus:bg-white focus:border-orange-500 transition-all shadow-none"
-                                placeholder="ระบุสถานที่"
+                                readOnly={isReadOnly}
+                                className={`h-10 text-lg font-bold border-transparent -ml-2 ${!isReadOnly ? 'hover:bg-stone-50 focus:bg-white focus:border-orange-500' : 'bg-transparent'} transition-all shadow-none`}
+                                placeholder={isReadOnly ? "-" : "ระบุสถานที่"}
                             />
                         </CardContent>
                     </Card>
@@ -347,7 +375,8 @@ function ProjectDetailContent() {
                                     type="date"
                                     value={formData.activityDate ? new Date(formData.activityDate).toISOString().split('T')[0] : ''}
                                     onChange={(e) => handleChange('activityDate', e.target.value ? new Date(e.target.value).toISOString() : '')}
-                                    className="h-10 text-lg font-bold border-transparent -ml-2 hover:bg-stone-50 focus:bg-white focus:border-orange-500 transition-all shadow-none"
+                                    className={`h-10 text-lg font-bold border-transparent -ml-2 ${!isReadOnly ? 'hover:bg-stone-50 focus:bg-white focus:border-orange-500' : 'bg-transparent'} transition-all shadow-none`}
+                                    disabled={isReadOnly}
                                 />
                             )}
                         </CardContent>
@@ -356,7 +385,7 @@ function ProjectDetailContent() {
 
                 {/* WBS Section */}
                 <div className="w-full mt-8">
-                    <WBS items={wbsItems} onItemsChange={setWbsItems} />
+                    <WBS items={wbsItems} onItemsChange={setWbsItems} readOnly={isReadOnly} />
                 </div>
             </main>
         </div>

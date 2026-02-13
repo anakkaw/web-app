@@ -36,6 +36,7 @@ export interface Agency {
     projects: Project[];
     categories: string[];
     totalAllocatedBudget: number;
+    passcode?: string; // New: Per-agency reader passcode
 }
 
 interface ProjectContextType {
@@ -61,12 +62,21 @@ interface ProjectContextType {
     syncLocalToCloud: () => Promise<void>;
     duplicateProject: (id: number) => void;
     resetAllProjectDates: () => void;
+    // Reader Mode
+    userRole: 'admin' | 'reader' | 'guest';
+    loginAsReader: (passcode: string) => boolean;
+    loginAsDemoAdmin: () => void;
+    logout: () => void;
+    isAuthenticated: boolean;
+    updateAgencyPasscode: (agencyId: string, passcode: string) => void;
+    isLoaded: boolean;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 const AGENCIES_STORAGE_KEY = "project_budget_agencies_v2";
 const CURRENT_AGENCY_ID_KEY = "project_budget_current_agency_id";
+const USER_ROLE_KEY = "project_budget_user_role";
 
 // Legacy keys for migration
 const LEGACY_PROJECTS_KEY = "project_budget_projects";
@@ -97,49 +107,65 @@ const defaultProjects: Project[] = [
     },
 ];
 
+const DEMO_MODE_KEY = "project_budget_demo_mode";
+
 export function ProjectProvider({ children }: { children: React.ReactNode }) {
     const [agencies, setAgencies] = useState<Agency[]>([]);
     const [currentAgencyId, setCurrentAgencyId] = useState<string>("");
+    const [userRole, setUserRole] = useState<'admin' | 'reader' | 'guest'>('guest');
     const [isLoaded, setIsLoaded] = useState(false);
     const [session, setSession] = useState<Session | null>(null);
 
+    const loadFromSupabase = async (userId: string) => {
+        const { supabase } = await import("@/lib/supabase");
+        const { data, error } = await supabase
+            .from("user_data")
+            .select("data")
+            .eq("user_id", userId)
+            .single();
+
+        if (data && data.data) {
+            // Check if data is valid JSON structure for agencies
+            const cloudData = data.data as { agencies?: Agency[], currentAgencyId?: string };
+            const cloudAgencies = cloudData.agencies;
+            const cloudCurrentId = cloudData.currentAgencyId;
+
+            if (cloudAgencies && Array.isArray(cloudAgencies)) {
+                setAgencies(cloudAgencies);
+                if (cloudCurrentId) setCurrentAgencyId(cloudCurrentId);
+            }
+        } else {
+            // No cloud data — fall back to local storage
+            loadFromLocalStorage();
+        }
+        setIsLoaded(true);
+    };
+
     // Initial load and Auth subscription
     useEffect(() => {
-        const loadFromSupabase = async (userId: string) => {
-            const { supabase } = await import("@/lib/supabase");
-            const { data, error } = await supabase
-                .from("user_data")
-                .select("data")
-                .eq("user_id", userId)
-                .single();
+        // Restore user role specifically here to ensure it sticks
+        const demo = localStorage.getItem(DEMO_MODE_KEY);
+        const storedRole = localStorage.getItem(USER_ROLE_KEY);
 
-            if (data && data.data) {
-                // Check if data is valid JSON structure for agencies
-                const cloudData = data.data as { agencies?: Agency[], currentAgencyId?: string };
-                const cloudAgencies = cloudData.agencies;
-                const cloudCurrentId = cloudData.currentAgencyId;
+        if (demo === 'true') {
+            setUserRole('admin');
+        } else if (storedRole === 'reader' || storedRole === 'admin') {
+            setUserRole(storedRole as 'admin' | 'reader');
+        }
 
-                if (cloudAgencies && Array.isArray(cloudAgencies)) {
-                    setAgencies(cloudAgencies);
-                    if (cloudCurrentId) setCurrentAgencyId(cloudCurrentId);
-                }
-            } else {
-                console.log("No cloud data found or error:", error);
-                // Optionally: could prompt to upload local data here, but for now just load local
-                loadFromLocalStorage();
-            }
-            setIsLoaded(true);
-        };
+        // 1. Initial Data Load
+        loadFromLocalStorage();
 
-        // 1. Check for active session
+        // 2. Supabase Auth Listener
         import("@/lib/supabase").then(({ supabase }) => {
             supabase.auth.getSession().then(({ data: { session } }) => {
                 setSession(session);
                 if (session) {
+                    setUserRole('admin');
                     loadFromSupabase(session.user.id);
-                } else {
-                    loadFromLocalStorage();
                 }
+                // Note: If no session, we DO NOT reset userRole here, 
+                // because it might have been set by lazy init (local admin/reader).
             });
 
             const {
@@ -147,9 +173,23 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             } = supabase.auth.onAuthStateChange((_event, session) => {
                 setSession(session);
                 if (session) {
+                    // Safety check: if we are in demo mode, do NOT switch to Supabase user
+                    if (typeof window !== 'undefined' && localStorage.getItem(DEMO_MODE_KEY) === 'true') {
+                        return;
+                    }
+                    setUserRole('admin');
                     loadFromSupabase(session.user.id);
                 } else {
-                    // Start fresh or load local when logged out
+                    // Only reset if we were previously logged in via Supabase? 
+                    // Or if we explicitly signed out?
+                    // Safe approach: If we are not 'admin' or 'reader' locally, load defaults.
+                    // But if we are locally 'admin' (demo), we should stay 'admin'.
+
+                    // Actually, onAuthStateChange might fire on init. 
+                    // We should only reset if the USER ROLE was 'admin' AND we lost session?
+                    // No, Demo Admin effectively has no session.
+
+                    // Best approach: Just load data. Do not touch userRole unless it is 'guest'.
                     loadFromLocalStorage();
                 }
             });
@@ -245,6 +285,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             projects: [],
             categories: defaultCategories,
             totalAllocatedBudget: 100000000,
+            passcode: '9999', // Default passcode for new agencies
         };
         setAgencies((prev) => [...prev, newAgency]);
         setCurrentAgencyId(newAgency.id);
@@ -393,6 +434,52 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const updateAgencyPasscode = (agencyId: string, newPasscode: string) => {
+        setAgencies((prev) => prev.map(a =>
+            a.id === agencyId ? { ...a, passcode: newPasscode } : a
+        ));
+    };
+
+    const loginAsReader = (passcode: string): boolean => {
+        // 1. Check if it matches any agency's passcode
+        const targetAgency = agencies.find(a => a.passcode === passcode);
+
+        if (targetAgency) {
+            setUserRole('reader');
+            localStorage.setItem(USER_ROLE_KEY, 'reader');
+            setCurrentAgencyId(targetAgency.id); // Switch to that agency
+            return true;
+        }
+
+        // 2. Fallback: Check hardcoded defaults or legacy global code if absolutely needed
+        // For now, let's keep '1234' as a master fallback for testing if desired, or remove it for strictness.
+        // User asked for "code for each agency", so we rely on that. 
+        // We'll keep 'demo1234' as a global reader fail-safe? No, 'demo1234' is admin.
+
+
+        return false;
+    };
+
+    const loginAsDemoAdmin = () => {
+        setUserRole('admin');
+        localStorage.setItem(USER_ROLE_KEY, 'admin');
+        localStorage.setItem(DEMO_MODE_KEY, 'true');
+        // Load local data for demo
+        loadFromLocalStorage();
+    };
+
+    const logout = async () => {
+        setUserRole('guest');
+        localStorage.removeItem(USER_ROLE_KEY);
+        localStorage.removeItem(DEMO_MODE_KEY);
+        if (session) {
+            const { supabase } = await import("@/lib/supabase");
+            await supabase.auth.signOut();
+        }
+        // Force reload to clear states
+        window.location.reload();
+    };
+
     return (
         <ProjectContext.Provider value={{
             agencies,
@@ -415,7 +502,14 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             session,
             syncLocalToCloud,
             duplicateProject,
-            resetAllProjectDates
+            resetAllProjectDates,
+            userRole,
+            loginAsReader,
+            logout,
+            isAuthenticated: userRole !== 'guest',
+            updateAgencyPasscode,
+            loginAsDemoAdmin,
+            isLoaded,
         }}>
             {children}
         </ProjectContext.Provider>

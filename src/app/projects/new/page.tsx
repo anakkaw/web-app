@@ -33,7 +33,7 @@ export default function NewProject() {
             <Navbar />
 
             <main className="app-container px-6 py-12 lg:px-10">
-                <div className="max-w-xl mx-auto animation-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="max-w-xl mx-auto animate-page-enter">
                     <div className="mb-10 flex items-center gap-6">
                         <Button variant="ghost" size="icon" asChild className="h-12 w-12 text-stone-400 hover:text-orange-600 hover:bg-orange-50 rounded-full transition-all">
                             <Link href="/">
@@ -114,14 +114,12 @@ export default function NewProject() {
                                     </select>
                                 </div>
 
-
-
                                 <div className="space-y-2">
                                     <Label htmlFor="owner" className="text-stone-700 font-bold">ผู้รับผิดชอบโครงการ</Label>
                                     <Input
                                         id="owner"
                                         placeholder="ระบุชื่อผู้รับผิดชอบ (ไม่บังคับ)"
-                                        className="font-medium"
+                                        className="h-12 font-semibold border-stone-200 focus:border-orange-500 focus:ring-orange-500/20"
                                         value={formData.owner}
                                         onChange={(e) => setFormData({ ...formData, owner: e.target.value })}
                                     />
@@ -131,7 +129,7 @@ export default function NewProject() {
                                     <Input
                                         id="location"
                                         placeholder="ระบุสถานที่ตั้ง (ไม่บังคับ)"
-                                        className="font-medium"
+                                        className="h-12 font-semibold border-stone-200 focus:border-orange-500 focus:ring-orange-500/20"
                                         value={formData.location}
                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                     />
