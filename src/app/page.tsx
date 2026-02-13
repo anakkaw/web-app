@@ -56,6 +56,7 @@ export default function Home() {
   const [sortConfig, setSortConfig] = useState<{ key: 'projectCode' | 'category' | 'budget'; direction: 'asc' | 'desc' } | null>(null);
   const [filterCategory, setFilterCategory] = useState("ทั้งหมด");
   const [isExporting, setIsExporting] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleExportCSV = () => {
     setIsExporting(true);
@@ -242,37 +243,61 @@ export default function Home() {
             </Button>
             {userRole !== 'reader' && (
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={resetAllProjectDates}
-                  className="gap-2 border-orange-200/50 text-orange-600 hover:bg-orange-50 hover:border-orange-300 font-bold h-10 px-4 rounded-xl transition-all"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><path d="M3 10h18" /><path d="M5 6h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" /><path d="M10 16h4" /><path d="M12 14v4" /></svg>
-                  รีเซ็ตวันที่
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    if (confirm("คุณต้องการล้างข้อมูลทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้")) {
-                      clearAllData();
-                    }
-                  }}
-                  className="gap-2 border-red-200/50 text-red-600 hover:bg-red-50 hover:border-red-300 font-bold h-10 px-4 rounded-xl transition-all"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
-                  ล้างข้อมูล
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsManageCategoriesOpen(true)}
-                  className="gap-2 border-stone-200/50 hover:bg-orange-50 hover:text-orange-700 text-stone-600 font-bold h-10 px-4 rounded-xl transition-all bg-white/50 backdrop-blur-sm"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
-                  จัดการประเภท
-                </Button>
+                <div className="relative">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                    className="gap-2 border-stone-200/50 text-stone-600 hover:bg-stone-50 hover:text-stone-900 font-bold h-10 px-4 rounded-xl transition-all"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2-2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z" /></svg>
+                    ตั้งค่า
+                  </Button>
+
+                  {isSettingsOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setIsSettingsOpen(false)}></div>
+                      <div className="absolute top-12 right-0 z-50 w-56 bg-white rounded-xl shadow-xl border border-stone-200 animate-in fade-in slide-in-from-top-2 overflow-hidden">
+                        <div className="p-2 space-y-1">
+                          <button
+                            onClick={() => {
+                              setIsManageCategoriesOpen(true);
+                              setIsSettingsOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-lg transition-colors text-left"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
+                            จัดการประเภท
+                          </button>
+                          <button
+                            onClick={() => {
+                              resetAllProjectDates();
+                              setIsSettingsOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-stone-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors text-left"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><path d="M3 10h18" /><path d="M5 6h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" /><path d="M10 16h4" /><path d="M12 14v4" /></svg>
+                            รีเซ็ตวันที่
+                          </button>
+                          <div className="h-px bg-stone-100 my-1"></div>
+                          <button
+                            onClick={() => {
+                              if (confirm("คุณต้องการล้างข้อมูลทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้")) {
+                                clearAllData();
+                              }
+                              setIsSettingsOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                            ล้างข้อมูลระบบ
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+
                 <Button size="sm" asChild className="gap-2 bg-stone-900 hover:bg-black text-white font-black h-10 px-6 rounded-xl shadow-xl shadow-stone-900/20 transition-all active:scale-95 hover:-translate-y-0.5">
                   <Link href="/projects/new">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
@@ -598,27 +623,60 @@ export default function Home() {
 
 
                                       <div className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-sm">
-                                        <div className="px-4 py-2 bg-stone-100/50 border-b border-stone-200 flex justify-between items-center">
+                                        <div className="px-4 py-3 bg-stone-50/50 border-b border-stone-200 flex justify-between items-center">
                                           <span className="text-xs font-black text-stone-500 uppercase tracking-wider">รายการค่าใช้จ่าย (WBS)</span>
-                                          <span className="text-[10px] font-bold text-stone-400">เรียงตามวันที่สร้าง</span>
+                                          <span className="text-[10px] font-bold text-stone-400">เรียงตามลำดับ</span>
                                         </div>
                                         {(!project.wbs || project.wbs.length === 0) ? (
                                           <div className="p-8 text-center text-stone-400 text-sm font-medium">ยังไม่มีรายการค่าใช้จ่าย</div>
                                         ) : (
-                                          <div className="divide-y divide-stone-100">
-                                            {(project.wbs || []).map((item, idx) => (
-                                              <div key={item.id || idx} className="flex justify-between items-center p-3 hover:bg-stone-50 transition-colors">
-                                                <div>
-                                                  <p className="font-bold text-stone-700 text-sm">{item.description}</p>
-                                                  <p className="text-xs text-stone-400 font-medium">{item.quantity} {item.unit} x ฿{item.unitPrice.toLocaleString()}</p>
-                                                </div>
-                                                <p className="font-black text-stone-800 text-sm">฿{(item.quantity * item.unitPrice).toLocaleString()}</p>
-                                              </div>
-                                            ))}
-                                            <div className="p-3 bg-stone-50 flex justify-between items-center border-t border-stone-200">
-                                              <span className="text-xs font-black text-stone-500 uppercase">รวมค่าใช้จ่ายทั้งหมด</span>
-                                              <span className="font-black text-stone-900 text-sm">฿{totalWBS.toLocaleString()}</span>
-                                            </div>
+                                          <div className="overflow-x-auto">
+                                            <table className="w-full text-sm text-left">
+                                              <thead>
+                                                <tr className="bg-stone-50 border-b border-stone-100 text-xs text-stone-400 font-bold uppercase tracking-wider">
+                                                  <th className="px-6 py-3 text-center w-[5%]">#</th>
+                                                  <th className="px-6 py-3 w-[45%]">รายการ</th>
+                                                  <th className="px-6 py-3 text-right w-[10%]">ปริมาณ</th>
+                                                  <th className="px-6 py-3 text-center w-[10%]">หน่วย</th>
+                                                  <th className="px-6 py-3 text-right w-[15%]">ราคา/หน่วย</th>
+                                                  <th className="px-6 py-3 text-right w-[15%]">รวม</th>
+                                                </tr>
+                                              </thead>
+                                              <tbody className="divide-y divide-stone-100">
+                                                {(project.wbs || []).map((item, idx) => {
+                                                  const itemTotal = item.quantity * item.unitPrice;
+                                                  // Calculate percentage of total budget for the progress bar
+                                                  // Use project budget or sum of WBS as base? Usually project budget.
+                                                  // Verify totalWBS is calculated correctly above.
+                                                  const percent = totalWBS > 0 ? (itemTotal / totalWBS) * 100 : 0;
+
+                                                  return (
+                                                    <tr key={item.id || idx} className="hover:bg-stone-50/80 transition-colors group">
+                                                      <td className="px-6 py-4 text-center text-stone-300 font-bold">{idx + 1}</td>
+                                                      <td className="px-6 py-4">
+                                                        <div className="space-y-2">
+                                                          <span className="text-stone-800 font-bold text-sm block">{item.description}</span>
+                                                          <div className="w-full bg-stone-100 rounded-full h-1.5 overflow-hidden">
+                                                            <div
+                                                              className="bg-orange-600 h-1.5 rounded-full transition-all duration-500"
+                                                              style={{ width: `${Math.min(percent, 100)}%` }}
+                                                            />
+                                                          </div>
+                                                        </div>
+                                                      </td>
+                                                      <td className="px-6 py-4 text-right font-bold text-stone-700">{item.quantity.toLocaleString()}</td>
+                                                      <td className="px-6 py-4 text-center font-medium text-stone-500 text-xs">{item.unit}</td>
+                                                      <td className="px-6 py-4 text-right font-bold text-stone-700">{item.unitPrice.toLocaleString()}</td>
+                                                      <td className="px-6 py-4 text-right font-black text-stone-800 text-base">฿{itemTotal.toLocaleString()}</td>
+                                                    </tr>
+                                                  );
+                                                })}
+                                                <tr className="bg-stone-50/50 border-t-2 border-stone-100">
+                                                  <td colSpan={5} className="px-6 py-4 text-right font-black text-stone-500 text-xs uppercase tracking-wider">รวมทั้งหมด</td>
+                                                  <td className="px-6 py-4 text-right font-black text-stone-900 text-lg">฿{totalWBS.toLocaleString()}</td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
                                           </div>
                                         )}
                                       </div>

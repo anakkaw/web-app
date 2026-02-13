@@ -273,7 +273,10 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess?: () => void }) 
                         )}
                     </CardContent>
                 </Tabs>
+                <div className="p-4 text-center">
+                    <p className="text-xs text-stone-400 font-mono">v2.0 (Agency Selection Enabled)</p>
+                </div>
             </Card>
-        </div>
+        </div >
     )
 }
