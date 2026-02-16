@@ -426,30 +426,11 @@ export default function Home() {
                     .sort(([, a], [, b]) => b - a) // Sort by value descending
                     .map(([category, budget]) => {
                       const colors = getCategoryColor(category);
-                      // Extract hex color from class name is tricky without mapping, so better to map manually or compute
-                      // For simplicity, let's map known categories to hex values matching Tailwind
-                      const colorMap: Record<string, string> = {
-                        'Construction': '#ea580c', // Orange-600
-                        'Maintenance': '#2563eb', // Blue-600 
-                        'Technique': '#7c3aed', // Violet-600
-                        'Equipment': '#059669', // Emerald-600
-                        'Training': '#db2777', // Pink-600
-                        'Other': '#57534e', // Stone-600
-                      };
-                      // Simplified regex extraction or fallback
-                      let hexColor = '#57534e';
-                      if (colors.bg.includes('orange')) hexColor = '#ea580c';
-                      if (colors.bg.includes('blue')) hexColor = '#2563eb';
-                      if (colors.bg.includes('indigo')) hexColor = '#4f46e5';
-                      if (colors.bg.includes('emerald')) hexColor = '#059669';
-                      if (colors.bg.includes('violet')) hexColor = '#7c3aed';
-                      if (colors.bg.includes('pink')) hexColor = '#db2777';
-                      if (colors.bg.includes('stone')) hexColor = '#57534e';
 
                       return {
                         label: category,
                         value: budget,
-                        color: hexColor
+                        color: colors.hex
                       };
                     })}
                 />
