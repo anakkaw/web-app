@@ -33,7 +33,7 @@ export function Logo({
     return (
         <div className={cn("flex items-center gap-3 group", className)}>
             <div className={cn(
-                "relative flex items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 shadow-lg shadow-orange-500/30 transition-transform duration-300 group-hover:scale-105",
+                "relative flex items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 shadow-lg shadow-orange-500/30 transition-transform duration-300 group-hover:scale-105",
                 sizeClasses[size]
             )}>
                 <div className="absolute inset-0 bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -45,7 +45,7 @@ export function Logo({
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className={cn("text-white", iconSizes[size])}
+                    className={cn("text-white drop-shadow-md", iconSizes[size])}
                 >
                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
@@ -56,7 +56,7 @@ export function Logo({
                     <span className="text-xl font-black tracking-tighter text-stone-900 leading-none group-hover:text-orange-600 transition-colors">
                         Project
                     </span>
-                    <span className="text-sm font-bold tracking-widest text-orange-600 uppercase">Management</span>
+                    <span className="text-sm font-bold tracking-widest text-stone-500 uppercase group-hover:text-purple-600 transition-colors">Management</span>
                 </div>
             )}
         </div>

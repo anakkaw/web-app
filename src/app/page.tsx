@@ -5,6 +5,7 @@ import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import Auth from "@/components/feature/Auth";
 import { Input } from "@/components/ui/input";
+import { PieChart } from "@/components/ui/pie-chart";
 import {
   Card,
   CardContent,
@@ -186,7 +187,7 @@ export default function Home() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-[#fffcfb] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
         <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-700 shadow-lg shadow-orange-500/30">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-white animate-save-pulse">
             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
@@ -199,7 +200,7 @@ export default function Home() {
 
   if (!isAuthenticated && userRole === 'guest') {
     return (
-      <div className="min-h-screen bg-[#fffcfb] font-sans">
+      <div className="min-h-screen bg-background font-sans">
         <Navbar />
         <main className="app-container px-6 py-12 lg:px-10 flex items-center justify-center min-h-[calc(100vh-144px)]">
           {/* Dynamic import or just normal import if client component */}
@@ -210,7 +211,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fffcfb] font-sans">
+    <div className="min-h-screen bg-background font-sans">
       <Navbar />
 
       <main className="app-container px-4 py-8 lg:px-8 relative animate-page-enter">
@@ -219,7 +220,7 @@ export default function Home() {
             <div className="mb-6 inline-block">
               <Logo size="lg" showText={false} className="animate-in zoom-in-50 duration-500" />
             </div>
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-orange-600 mb-2 drop-shadow-sm animate-in fade-in slide-in-from-left-2 transition-all">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-pink-600 to-purple-600 mb-2 drop-shadow-sm animate-in fade-in slide-in-from-left-2 transition-all">
               ระบบบริหารจัดการโครงการ
             </h1>
             <p className="text-stone-500 text-sm sm:text-lg font-medium max-w-xl leading-relaxed">
@@ -336,7 +337,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          {/* Remaining Budget - Green */}
+          {/* Remaining Budget - Green/Red */}
           <Card className={`relative overflow-hidden border-none shadow-xl rounded-2xl text-white transform hover:scale-[1.01] transition-all duration-300 ${remainingBudget >= 0 ? "bg-gradient-to-br from-emerald-500 to-teal-700" : "bg-gradient-to-br from-red-500 to-rose-700"}`}>
             <div className="absolute top-0 right-0 p-3 opacity-10">
               <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
@@ -382,10 +383,10 @@ export default function Home() {
                 {['Not Start', 'Planning', 'In Progress', 'Done'].map((status) => {
                   const count = projects.filter(p => (p.progressLevel || 'Not Start') === status).length;
                   const colorMap: Record<string, string> = {
-                    'Not Start': 'bg-stone-100 text-stone-600 ring-stone-200',
-                    'Planning': 'bg-indigo-50 text-indigo-700 ring-indigo-200',
-                    'In Progress': 'bg-blue-50 text-blue-700 ring-blue-200',
-                    'Done': 'bg-emerald-50 text-emerald-700 ring-emerald-200'
+                    'Not Start': 'bg-stone-100 text-stone-600 ring-stone-200 hover:bg-stone-200 hover:scale-105',
+                    'Planning': 'bg-indigo-100 text-indigo-700 ring-indigo-300 hover:bg-indigo-200 hover:scale-105',
+                    'In Progress': 'bg-blue-100 text-blue-700 ring-blue-300 hover:bg-blue-200 hover:scale-105',
+                    'Done': 'bg-emerald-100 text-emerald-700 ring-emerald-300 hover:bg-emerald-200 hover:scale-105'
                   };
                   const labelMap: Record<string, string> = {
                     'Not Start': 'ยังไม่เริ่ม',
@@ -394,9 +395,9 @@ export default function Home() {
                     'Done': 'เสร็จสิ้น'
                   };
                   return (
-                    <div key={status} className={`p-4 rounded-xl flex flex-col items-center justify-center gap-2 ring-1 ring-inset ${colorMap[status]} transition-transform hover:scale-105 duration-300`}>
+                    <div key={status} className={`p-3 rounded-xl flex flex-col items-center justify-center gap-1 ring-1 ring-inset ${colorMap[status]} transition-all duration-300 shadow-sm cursor-default hover:shadow-md`}>
                       <span className="text-xs font-black opacity-80 uppercase tracking-wider">{labelMap[status]}</span>
-                      <span className="text-3xl font-black tracking-tighter">{count}</span>
+                      <span className="text-3xl lg:text-4xl font-black tracking-tighter drop-shadow-sm">{count}</span>
                     </div>
                   );
                 })}
@@ -415,91 +416,104 @@ export default function Home() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="space-y-4 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
-                {Object.entries(budgetByCategory).map(([category, budget]) => {
-                  const colors = getCategoryColor(category);
-                  return (
-                    <div key={category} className="space-y-2">
-                      <div className="flex justify-between items-end">
-                        <span className="flex items-center gap-2 text-stone-700 font-bold text-sm">
-                          <span className={`flex h-3 w-3 rounded-full ${colors.bg} ring-2 ${colors.ring}`}></span>
-                          {category}
-                        </span>
-                        <span className=" font-bold text-stone-700 text-sm">฿{budget.toLocaleString()} <span className="text-xs text-stone-400 font-medium ml-1">({totalProjectBudget > 0 ? ((budget / totalProjectBudget) * 100).toFixed(1) : 0}%)</span></span>
-                      </div>
-                      <div className="h-2.5 w-full rounded-full bg-stone-100 overflow-hidden ring-1 ring-stone-200/50">
-                        <div
-                          className={`h-full rounded-full ${colors.bg} shadow-lg transition-all duration-1000 ease-out`}
-                          style={{ width: `${maxCategoryBudget > 0 ? (budget / maxCategoryBudget) * 100 : 0}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-                {Object.keys(budgetByCategory).length === 0 && (
-                  <div className="text-center py-10 bg-stone-50/50 rounded-2xl border-2 border-dashed border-stone-200">
-                    <p className="text-stone-400 font-bold text-base">ยังไม่มีข้อมูลโครงการ</p>
-                  </div>
-                )}
-              </div>
+              {Object.keys(budgetByCategory).length === 0 ? (
+                <div className="text-center py-10 bg-stone-50/50 rounded-2xl border-2 border-dashed border-stone-200">
+                  <p className="text-stone-400 font-bold text-base">ยังไม่มีข้อมูลโครงการ</p>
+                </div>
+              ) : (
+                <PieChart
+                  data={Object.entries(budgetByCategory)
+                    .sort(([, a], [, b]) => b - a) // Sort by value descending
+                    .map(([category, budget]) => {
+                      const colors = getCategoryColor(category);
+                      // Extract hex color from class name is tricky without mapping, so better to map manually or compute
+                      // For simplicity, let's map known categories to hex values matching Tailwind
+                      const colorMap: Record<string, string> = {
+                        'Construction': '#ea580c', // Orange-600
+                        'Maintenance': '#2563eb', // Blue-600 
+                        'Technique': '#7c3aed', // Violet-600
+                        'Equipment': '#059669', // Emerald-600
+                        'Training': '#db2777', // Pink-600
+                        'Other': '#57534e', // Stone-600
+                      };
+                      // Simplified regex extraction or fallback
+                      let hexColor = '#57534e';
+                      if (colors.bg.includes('orange')) hexColor = '#ea580c';
+                      if (colors.bg.includes('blue')) hexColor = '#2563eb';
+                      if (colors.bg.includes('indigo')) hexColor = '#4f46e5';
+                      if (colors.bg.includes('emerald')) hexColor = '#059669';
+                      if (colors.bg.includes('violet')) hexColor = '#7c3aed';
+                      if (colors.bg.includes('pink')) hexColor = '#db2777';
+                      if (colors.bg.includes('stone')) hexColor = '#57534e';
+
+                      return {
+                        label: category,
+                        value: budget,
+                        color: hexColor
+                      };
+                    })}
+                />
+              )}
             </CardContent>
           </Card>
         </div>
 
         {/* Recent Projects Table */}
-        <Card className="card-premium border-none ring-1 ring-white/50 overflow-hidden shadow-xl shadow-stone-200/50">
-          <CardHeader className="bg-white/60 border-b border-white/20 backdrop-blur-md sticky top-0 z-20 flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 px-6">
-            <CardTitle className="flex items-center gap-2 text-lg text-stone-900 font-black">
-              <div className="p-1.5 bg-stone-900 rounded-lg shadow-sm text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></svg>
-              </div>
-              รายการโครงการ
-            </CardTitle>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant={filterCategory === 'ทั้งหมด' ? 'default' : 'outline'}
-                  onClick={() => setFilterCategory('ทั้งหมด')}
-                  className={`h-8 px-3 rounded-lg font-bold text-[11px] ${filterCategory === 'ทั้งหมด' ? 'bg-stone-900 text-white hover:bg-black' : 'text-stone-500 border-stone-200 hover:bg-stone-50'}`}
-                >
-                  ทั้งหมด
-                </Button>
-                {categories.map(cat => (
+        <Card className="card-premium border border-stone-200 shadow-sm rounded-2xl bg-white overflow-hidden">
+          <CardHeader className="bg-white border-b border-stone-200 py-5 px-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <CardTitle className="flex items-center gap-2 text-lg text-stone-900 font-black tracking-tight">
+                <div className="p-2 bg-stone-100 rounded-lg text-stone-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></svg>
+                </div>
+                รายการโครงการ
+              </CardTitle>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap gap-2">
                   <Button
-                    key={cat}
-                    variant={filterCategory === cat ? 'default' : 'outline'}
-                    onClick={() => setFilterCategory(cat)}
-                    className={`h-8 px-3 rounded-lg font-bold text-[11px] ${filterCategory === cat ? 'bg-orange-600 text-white hover:bg-orange-700 border-none' : 'text-stone-500 border-stone-200 hover:bg-orange-50 hover:text-orange-700'}`}
+                    variant={filterCategory === 'ทั้งหมด' ? 'default' : 'ghost'}
+                    onClick={() => setFilterCategory('ทั้งหมด')}
+                    className={`h-8 px-3 rounded-lg font-bold text-xs ${filterCategory === 'ทั้งหมด' ? 'bg-stone-900 text-white hover:bg-stone-800' : 'text-stone-500 hover:text-stone-900 hover:bg-stone-100'}`}
                   >
-                    {cat}
+                    ทั้งหมด
                   </Button>
-                ))}
+                  {categories.map(cat => (
+                    <Button
+                      key={cat}
+                      variant={filterCategory === cat ? 'default' : 'ghost'}
+                      onClick={() => setFilterCategory(cat)}
+                      className={`h-8 px-3 rounded-lg font-bold text-xs ${filterCategory === cat ? 'bg-orange-600 text-white hover:bg-orange-700' : 'text-stone-500 hover:text-orange-700 hover:bg-orange-50'}`}
+                    >
+                      {cat}
+                    </Button>
+                  ))}
+                </div>
+
+                {userRole !== 'reader' && (
+                  <div className="hidden sm:block h-6 w-px bg-stone-200"></div>
+                )}
+
+                {userRole !== 'reader' && (
+                  <Button size="sm" asChild className="gap-2 bg-stone-900 hover:bg-black text-white font-bold h-9 px-4 rounded-xl shadow-sm transition-all active:scale-95">
+                    <Link href="/projects/new">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+                      สร้างโครงการ
+                    </Link>
+                  </Button>
+                )}
               </div>
-
-              {userRole !== 'reader' && (
-                <div className="hidden sm:block h-6 w-px bg-stone-200"></div>
-              )}
-
-              {userRole !== 'reader' && (
-                <Button size="sm" asChild className="gap-2 bg-stone-900 hover:bg-black text-white font-black h-9 px-4 rounded-xl shadow-md transition-all active:scale-95">
-                  <Link href="/projects/new">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
-                    สร้างโครงการ
-                  </Link>
-                </Button>
-              )}
             </div>
           </CardHeader>
           <CardContent className="p-0">
             <div className="relative w-full overflow-hidden min-h-[300px]">
               {projects.length === 0 ? (
                 <div className="text-center py-24 text-stone-500">
-                  <div className="inline-flex items-center justify-center p-6 bg-orange-50 rounded-full mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-orange-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="12" x2="12" y1="18" y2="12" /><line x1="9" x2="15" y1="15" y2="15" /></svg>
+                  <div className="inline-flex items-center justify-center p-6 bg-stone-50 rounded-full mb-6 text-stone-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="12" x2="12" y1="18" y2="12" /><line x1="9" x2="15" y1="15" y2="15" /></svg>
                   </div>
-                  <p className="font-black text-2xl mb-2 text-stone-800">เริ่มสร้างโครงการของคุณ</p>
-                  <p className="text-stone-400 mb-8 max-w-sm mx-auto">ยังไม่มีข้อมูลในระบบ สร้างโครงการใหม่เพื่อเริ่มติดตามสถานะและงบประมาณ</p>
-                  <Button variant="default" asChild className="bg-orange-600 hover:bg-orange-700 text-white font-bold h-12 px-10 rounded-xl shadow-lg shadow-orange-600/30 hover:shadow-orange-600/40 hover:-translate-y-1 transition-all">
+                  <p className="font-bold text-xl mb-2 text-stone-700">เริ่มสร้างโครงการของคุณ</p>
+                  <p className="text-stone-400 mb-8 max-w-sm mx-auto">ยังไม่มีข้อมูลในระบบ สร้างโครงการใหม่เพื่อเริ่มติดตาม</p>
+                  <Button variant="default" asChild className="bg-stone-900 hover:bg-black text-white font-bold h-11 px-8 rounded-xl shadow-lg shadow-stone-900/10">
                     <Link href="/projects/new">สร้างโครงการใหม่</Link>
                   </Button>
                 </div>
@@ -512,24 +526,24 @@ export default function Home() {
                   ) : (
                     <table className="w-full text-sm text-left border-collapse">
                       <thead>
-                        <tr className="border-b border-stone-200/60 bg-stone-50/80 backdrop-blur-sm">
-                          <th className="h-12 px-2 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] w-[50px]"></th>
-                          <th className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] hidden md:table-cell">วันที่</th>
-                          <th onClick={() => requestSort('projectCode')} className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] cursor-pointer hover:text-orange-600 transition-colors group hidden lg:table-cell">
+                        <tr className="border-b border-stone-200 bg-stone-50/50 text-xs text-stone-500 font-bold uppercase tracking-wider">
+                          <th className="h-11 px-2 text-center w-[50px]"></th>
+                          <th className="h-11 px-6 hidden md:table-cell">วันที่</th>
+                          <th onClick={() => requestSort('projectCode')} className="h-11 px-6 cursor-pointer hover:text-stone-800 transition-colors group hidden lg:table-cell">
                             รหัส
-                            <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-orange-600">{sortConfig?.key === 'projectCode' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
+                            <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-stone-400">{sortConfig?.key === 'projectCode' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
                           </th>
-                          <th className="h-12 px-4 sm:px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px]">ชื่อโครงการ</th>
-                          <th className="h-12 px-4 sm:px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center">สถานะ</th>
-                          <th onClick={() => requestSort('budget')} className="h-12 px-4 sm:px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-right cursor-pointer hover:text-orange-600 transition-colors group">
+                          <th className="h-11 px-4 sm:px-6">ชื่อโครงการ</th>
+                          <th className="h-11 px-4 sm:px-6 text-center">สถานะ</th>
+                          <th onClick={() => requestSort('budget')} className="h-11 px-4 sm:px-6 text-right cursor-pointer hover:text-stone-800 transition-colors group">
                             งบประมาณ
-                            <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-orange-600">{sortConfig?.key === 'budget' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
+                            <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-stone-400">{sortConfig?.key === 'budget' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
                           </th>
-                          <th onClick={() => requestSort('category')} className="h-12 px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center cursor-pointer hover:text-orange-600 transition-colors group hidden sm:table-cell">
+                          <th onClick={() => requestSort('category')} className="h-11 px-6 text-center cursor-pointer hover:text-stone-800 transition-colors group hidden sm:table-cell">
                             หมวดหมู่
-                            <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-orange-600">{sortConfig?.key === 'category' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
+                            <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-stone-400">{sortConfig?.key === 'category' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
                           </th>
-                          <th className="h-12 px-4 sm:px-6 align-middle font-black text-stone-400 uppercase tracking-widest text-[10px] text-center">
+                          <th className="h-11 px-4 sm:px-6 text-center">
                             {userRole !== 'reader' && "จัดการ"}
                           </th>
                         </tr>
@@ -541,36 +555,29 @@ export default function Home() {
 
                           return (
                             <Fragment key={project.id}>
-                              <tr className={`transition-all hover:bg-orange-50/40 group ${isExpanded ? "bg-orange-50/60" : ""}`}>
+                              <tr className={`transition-colors hover:bg-stone-50 group border-b border-stone-100 last:border-0 ${isExpanded ? "bg-stone-50" : ""}`}>
                                 <td className="px-2 py-3 align-middle text-center">
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className={`h-8 w-8 rounded-lg transition-transform duration-200 ${isExpanded ? "rotate-180 text-orange-600 bg-orange-100" : "text-stone-400 hover:text-orange-600 hover:bg-orange-50"}`}
+                                    className={`h-7 w-7 rounded-md transition-transform duration-200 ${isExpanded ? "rotate-180 text-stone-600 bg-stone-200/50" : "text-stone-300 hover:text-stone-600 hover:bg-stone-100"}`}
                                     onClick={() => toggleProjectExpansion(project.id)}
-                                    title="ดูงบประมาณด่วน"
                                   >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                   </Button>
                                 </td>
-                                <td className="px-6 py-3 align-middle text-stone-500 font-bold text-xs whitespace-nowrap hidden md:table-cell">
+                                <td className="px-6 py-4 text-stone-500 font-medium text-xs whitespace-nowrap hidden md:table-cell">
                                   {project.activityDate ? new Date(project.activityDate).toLocaleDateString('th-TH', { year: '2-digit', month: 'short', day: 'numeric' }) : '-'}
                                 </td>
-                                <td className="px-6 py-3 align-middle  font-bold text-stone-400 text-xs hidden lg:table-cell">#{project.projectCode || "N/A"}</td>
-                                <td className="px-4 sm:px-6 py-3 align-middle font-bold text-stone-900 text-sm">{project.name}</td>
-                                <td className="px-4 sm:px-6 py-3 align-middle text-center">
-                                  <span className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-sm ring-1 ring-inset
-                                  ${!project.progressLevel || project.progressLevel === 'Not Start' ? 'bg-stone-100 text-stone-600 ring-stone-300' : ''}
-                                  ${project.progressLevel === 'Planning' ? 'bg-indigo-50 text-indigo-700 ring-indigo-200' : ''}
-                                  ${project.progressLevel === 'In Progress' ? 'bg-blue-50 text-blue-700 ring-blue-200' : ''}
-                                  ${project.progressLevel === 'Done' ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : ''}
+                                <td className="px-6 py-4 font-mono font-medium text-stone-400 text-xs hidden lg:table-cell">#{project.projectCode || "N/A"}</td>
+                                <td className="px-4 sm:px-6 py-4 font-bold text-stone-900 text-sm">{project.name}</td>
+                                <td className="px-4 sm:px-6 py-4 text-center">
+                                  <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider
+                                  ${!project.progressLevel || project.progressLevel === 'Not Start' ? 'bg-stone-100 text-stone-600' : ''}
+                                  ${project.progressLevel === 'Planning' ? 'bg-indigo-50 text-indigo-700' : ''}
+                                  ${project.progressLevel === 'In Progress' ? 'bg-blue-50 text-blue-700' : ''}
+                                  ${project.progressLevel === 'Done' ? 'bg-emerald-50 text-emerald-700' : ''}
                               `}>
-                                    <span className={`inline-block h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full mr-1
-                                      ${!project.progressLevel || project.progressLevel === 'Not Start' ? 'bg-stone-400' : ''}
-                                      ${project.progressLevel === 'Planning' ? 'bg-indigo-500' : ''}
-                                      ${project.progressLevel === 'In Progress' ? 'bg-blue-500' : ''}
-                                      ${project.progressLevel === 'Done' ? 'bg-emerald-500' : ''}
-                                    `} />
                                     <span className="hidden xs:inline">
                                       {{
                                         'Not Start': 'ยังไม่เริ่ม',
@@ -581,21 +588,17 @@ export default function Home() {
                                     </span>
                                   </span>
                                 </td>
-                                <td className="px-4 sm:px-6 py-3 align-middle text-right  font-black text-stone-700 text-[13px] sm:text-sm whitespace-nowrap">฿{(project.budget || 0).toLocaleString()}</td>
-                                <td className="px-6 py-3 align-middle text-center hidden sm:table-cell">
-                                  <span className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] font-bold border shadow-sm backdrop-blur-sm
-                                  ${getCategoryColor(project.category || "อื่นๆ").lightBg}
-                                  ${getCategoryColor(project.category || "อื่นๆ").lightText}
-                                  ${getCategoryColor(project.category || "อื่นๆ").border}
-                                `}>
+                                <td className="px-4 sm:px-6 py-4 text-right font-bold text-stone-900 text-sm whitespace-nowrap">฿{(project.budget || 0).toLocaleString()}</td>
+                                <td className="px-6 py-4 text-center hidden sm:table-cell">
+                                  <span className="inline-flex items-center rounded-md px-2 py-1 text-[10px] font-semibold bg-stone-100 text-stone-600 border border-stone-200">
                                     {project.category || "อื่นๆ"}
                                   </span>
                                 </td>
-                                <td className="px-4 sm:px-6 py-3 align-middle text-center">
-                                  <div className="flex items-center justify-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-stone-400 hover:text-stone-900 hover:bg-white hover:shadow-sm rounded-lg transition-all" asChild>
+                                <td className="px-4 sm:px-6 py-4 text-center">
+                                  <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-stone-400 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-all" asChild>
                                       <Link href={`/projects/detail?id=${project.id}`}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
                                       </Link>
                                     </Button>
                                     {userRole !== 'reader' && (
@@ -604,10 +607,10 @@ export default function Home() {
                                           variant="ghost"
                                           size="icon"
                                           onClick={() => duplicateProject(project.id)}
-                                          title="คัดลอกโครงการ"
+                                          title="คัดลอก"
                                           className="h-8 w-8 text-stone-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                                         >
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>
                                         </Button>
                                         <Button
                                           variant="ghost"
@@ -619,7 +622,7 @@ export default function Home() {
                                             }
                                           }}
                                         >
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
                                         </Button>
                                       </>
                                     )}

@@ -187,10 +187,10 @@ export function WBS({
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                                    className="h-8 w-8 text-stone-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all rounded-full"
                                                     onClick={() => deleteItem(item.id)}
                                                 >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
                                                 </Button>
                                             )}
                                         </td>
@@ -216,10 +216,10 @@ export function WBS({
                         {!readOnly && (
                             <Button
                                 variant="default"
-                                className="bg-orange-500 hover:bg-orange-600 text-white gap-2 shadow-[0_10px_15px_-3px_rgba(249,115,22,0.2)] font-black px-8"
+                                className="bg-orange-500 hover:bg-orange-600 text-white gap-2 shadow-[0_10px_15px_-3px_rgba(249,115,22,0.2)] font-black px-8 group"
                                 onClick={addItem}
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
                                 เพิ่มรายการ
                             </Button>
                         )}

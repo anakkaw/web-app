@@ -293,27 +293,33 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
 
 
 
-    // Save data whenever it changes
+    // Save data whenever it changes (Debounced)
     useEffect(() => {
         if (!isLoaded) return;
 
-        // Always save to local storage as backup/offline cache
-        localStorage.setItem(AGENCIES_STORAGE_KEY, JSON.stringify(agencies));
-        localStorage.setItem(CURRENT_AGENCY_ID_KEY, currentAgencyId);
+        const saveData = async () => {
+            // Always save to local storage as backup/offline cache
+            localStorage.setItem(AGENCIES_STORAGE_KEY, JSON.stringify(agencies));
+            localStorage.setItem(CURRENT_AGENCY_ID_KEY, currentAgencyId);
 
-        // If logged in, save to cloud
-        if (session?.user?.id) {
-            const saveData = async () => {
-                const { supabase } = await import("@/lib/supabase");
-                await supabase.from("user_data").upsert({
-                    user_id: session.user.id,
-                    data: { agencies, currentAgencyId },
-                    updated_at: new Date().toISOString()
-                });
-            };
-            // Debounce or just save
-            saveData().catch(console.error);
-        }
+            // If logged in, save to cloud
+            if (session?.user?.id) {
+                try {
+                    const { supabase } = await import("@/lib/supabase");
+                    await supabase.from("user_data").upsert({
+                        user_id: session.user.id,
+                        data: { agencies, currentAgencyId },
+                        updated_at: new Date().toISOString()
+                    });
+                } catch (error) {
+                    console.error("Error auto-saving to cloud:", error);
+                }
+            }
+        };
+
+        const timeoutId = setTimeout(saveData, 1000); // Debounce for 1 second
+
+        return () => clearTimeout(timeoutId);
     }, [agencies, currentAgencyId, isLoaded, session]);
 
     const currentAgency = agencies.find(a => a.id === currentAgencyId);

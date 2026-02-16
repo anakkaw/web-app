@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, IBM_Plex_Sans_Thai } from "next/font/google"; // Import fonts
+import { Prompt } from "next/font/google"; // Import fonts
 import "./globals.css";
 import { ProjectProvider } from "@/contexts/ProjectContext";
 
 // Configure fonts
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const ibmPlexThai = IBM_Plex_Sans_Thai({
-  weight: ["100", "200", "300", "400", "500", "600", "700"],
+const prompt = Prompt({
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin", "thai"],
-  variable: "--font-ibm-plex-thai",
+  variable: "--font-prompt",
   display: "swap",
 });
 
@@ -29,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={`${ibmPlexThai.variable} ${inter.variable} font-sans antialiased`}>
+      <body className={`${prompt.variable} ${prompt.className} antialiased`}>
         <ProjectProvider>
           {children}
         </ProjectProvider>

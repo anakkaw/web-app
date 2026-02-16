@@ -18,7 +18,7 @@ export default function SettingsPage() {
 
     if (!isAuthenticated || userRole !== 'admin') {
         return (
-            <div className="min-h-screen bg-[#fffcfb] font-sans">
+            <div className="min-h-screen bg-background font-sans">
                 <Navbar />
                 <div className="container mx-auto py-20 text-center animate-page-enter">
                     <div className="inline-flex items-center justify-center p-5 bg-stone-100 rounded-full mb-6">
@@ -58,13 +58,13 @@ export default function SettingsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#fffcfb] font-sans">
+        <div className="min-h-screen bg-background font-sans">
             <Navbar />
             <div className="container mx-auto py-10 px-4 max-w-3xl animate-page-enter">
                 <div className="flex items-center gap-2 text-stone-500 font-bold text-sm mb-4">
                     <a href="/" className="hover:text-orange-600 transition-colors flex items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                        แดชบอร์ด
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                        หน้าหลัก
                     </a>
                     <span className="text-stone-300">/</span>
                     <span>ตั้งค่าระบบ</span>

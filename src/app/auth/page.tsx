@@ -20,7 +20,7 @@ export default function AuthPage() {
     }, [router])
 
     return (
-        <div className="min-h-screen bg-[#fffcfb] font-sans">
+        <div className="min-h-screen bg-background font-sans">
             <Navbar />
             <main className="app-container px-6 py-12 lg:px-10 flex items-center justify-center min-h-[calc(100vh-64px)]">
                 <Auth />

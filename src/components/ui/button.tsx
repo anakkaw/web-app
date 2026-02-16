@@ -9,24 +9,24 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+    "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
     {
         variants: {
             variant: {
-                default: "bg-orange-500 text-white hover:bg-orange-600 shadow-sm shadow-orange-100",
+                default: "bg-orange-500 text-white shadow-md shadow-orange-500/20 hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-500/30 hover:-translate-y-0.5",
                 destructive:
-                    "bg-red-500 text-white hover:bg-red-600",
+                    "bg-red-500 text-white shadow-md shadow-red-500/20 hover:bg-red-600 hover:shadow-xl hover:shadow-red-500/30 hover:-translate-y-0.5",
                 outline:
-                    "border border-stone-200 bg-white hover:bg-stone-50 hover:text-stone-900",
+                    "border-2 border-stone-200 bg-white hover:bg-stone-50 hover:text-stone-900 hover:border-stone-300",
                 secondary:
-                    "bg-stone-100 text-stone-900 hover:bg-stone-200",
+                    "bg-stone-100 text-stone-900 hover:bg-stone-200 hover:shadow-sm",
                 ghost: "hover:bg-orange-50 hover:text-orange-600",
                 link: "text-stone-900 underline-offset-4 hover:underline",
             },
             size: {
                 default: "h-10 px-4 py-2",
-                sm: "h-9 rounded-md px-3",
-                lg: "h-11 rounded-md px-8",
+                sm: "h-9 rounded-lg px-3",
+                lg: "h-12 rounded-xl px-8 text-base",
                 icon: "h-10 w-10",
             },
         },
