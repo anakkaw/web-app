@@ -54,8 +54,9 @@ export default function Home() {
     setTempBudget(totalAllocatedBudget.toString());
   }, [totalAllocatedBudget]);
 
-  const [sortConfig, setSortConfig] = useState<{ key: 'projectCode' | 'category' | 'budget'; direction: 'asc' | 'desc' } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: 'projectCode' | 'category' | 'budget' | 'name'; direction: 'asc' | 'desc' } | null>(null);
   const [filterCategory, setFilterCategory] = useState("ทั้งหมด");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isExporting, setIsExporting] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -143,10 +144,15 @@ export default function Home() {
   }, [projects, sortConfig]);
 
   const filteredProjects = useMemo(() => {
-    return sortedProjects.filter(p => filterCategory === "ทั้งหมด" || (p.category || "อื่นๆ") === filterCategory);
-  }, [sortedProjects, filterCategory]);
+    return sortedProjects.filter(p => {
+      const matchesCategory = filterCategory === "ทั้งหมด" || (p.category || "อื่นๆ") === filterCategory;
+      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (p.projectCode && p.projectCode.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchesCategory && matchesSearch;
+    });
+  }, [sortedProjects, filterCategory, searchQuery]);
 
-  const requestSort = (key: 'projectCode' | 'category' | 'budget') => {
+  const requestSort = (key: 'projectCode' | 'category' | 'budget' | 'name') => {
     let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc';
@@ -450,6 +456,22 @@ export default function Home() {
                 รายการโครงการ
               </CardTitle>
               <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <circle cx="11" cy="11" r="8" strokeWidth="2" />
+                      <line x1="21" y1="21" x2="16.65" y2="16.65" strokeWidth="2" />
+                    </svg>
+                    <Input
+                      type="text"
+                      placeholder="ค้นหาชื่อโครงการ..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 h-9 w-[180px] sm:w-[240px] bg-stone-50 border-stone-200 focus:bg-white focus:ring-2 focus:ring-orange-500/20 transition-all text-sm"
+                    />
+                  </div>
+                </div>
+
                 <div className="flex flex-wrap gap-2">
                   <Button
                     variant={filterCategory === 'ทั้งหมด' ? 'default' : 'ghost'}
@@ -509,20 +531,31 @@ export default function Home() {
                       <thead>
                         <tr className="border-b border-stone-200 bg-stone-50/50 text-xs text-stone-500 font-bold uppercase tracking-wider">
                           <th className="h-11 px-2 text-center w-[50px]"></th>
-                          <th className="h-11 px-6 hidden md:table-cell">วันที่</th>
                           <th onClick={() => requestSort('projectCode')} className="h-11 px-6 cursor-pointer hover:text-stone-800 transition-colors group hidden lg:table-cell">
                             รหัส
-                            <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-stone-400">{sortConfig?.key === 'projectCode' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
+                            <span className={`ml-1.5 inline-block transition-all ${sortConfig?.key === 'projectCode' ? 'opacity-100 text-orange-600 scale-110' : 'opacity-30 group-hover:opacity-100'}`}>
+                              {sortConfig?.key === 'projectCode' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
+                            </span>
                           </th>
-                          <th className="h-11 px-4 sm:px-6">ชื่อโครงการ</th>
+                          <th onClick={() => requestSort('name')} className="h-11 px-4 sm:px-6 cursor-pointer hover:text-stone-800 transition-colors group">
+                            ชื่อโครงการ
+                            <span className={`ml-1.5 inline-block transition-all ${sortConfig?.key === 'name' ? 'opacity-100 text-orange-600 scale-110' : 'opacity-30 group-hover:opacity-100'}`}>
+                              {sortConfig?.key === 'name' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
+                            </span>
+                          </th>
                           <th className="h-11 px-4 sm:px-6 text-center">สถานะ</th>
+                          <th className="h-11 px-6 hidden md:table-cell text-center">วันที่</th>
                           <th onClick={() => requestSort('budget')} className="h-11 px-4 sm:px-6 text-right cursor-pointer hover:text-stone-800 transition-colors group">
                             งบประมาณ
-                            <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-stone-400">{sortConfig?.key === 'budget' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
+                            <span className={`ml-1.5 inline-block transition-all ${sortConfig?.key === 'budget' ? 'opacity-100 text-orange-600 scale-110' : 'opacity-30 group-hover:opacity-100'}`}>
+                              {sortConfig?.key === 'budget' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
+                            </span>
                           </th>
                           <th onClick={() => requestSort('category')} className="h-11 px-6 text-center cursor-pointer hover:text-stone-800 transition-colors group hidden sm:table-cell">
                             หมวดหมู่
-                            <span className="ml-2 inline-block opacity-0 group-hover:opacity-100 text-stone-400">{sortConfig?.key === 'category' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
+                            <span className={`ml-1.5 inline-block transition-all ${sortConfig?.key === 'category' ? 'opacity-100 text-orange-600 scale-110' : 'opacity-30 group-hover:opacity-100'}`}>
+                              {sortConfig?.key === 'category' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
+                            </span>
                           </th>
                           <th className="h-11 px-4 sm:px-6 text-center">
                             {userRole !== 'reader' && "จัดการ"}
@@ -547,9 +580,6 @@ export default function Home() {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                   </Button>
                                 </td>
-                                <td className="px-6 py-4 text-stone-500 font-medium text-xs whitespace-nowrap hidden md:table-cell">
-                                  {project.activityDate ? new Date(project.activityDate).toLocaleDateString('th-TH', { year: '2-digit', month: 'short', day: 'numeric' }) : '-'}
-                                </td>
                                 <td className="px-6 py-4 font-mono font-medium text-stone-400 text-xs hidden lg:table-cell">#{project.projectCode || "N/A"}</td>
                                 <td className="px-4 sm:px-6 py-4 font-bold text-stone-900 text-sm">{project.name}</td>
                                 <td className="px-4 sm:px-6 py-4 text-center">
@@ -568,6 +598,9 @@ export default function Home() {
                                       }[project.progressLevel || 'Not Start']}
                                     </span>
                                   </span>
+                                </td>
+                                <td className="px-6 py-4 text-stone-500 font-medium text-xs whitespace-nowrap hidden md:table-cell text-center">
+                                  {project.activityDate ? new Date(project.activityDate).toLocaleDateString('th-TH', { year: '2-digit', month: 'short', day: 'numeric' }) : '-'}
                                 </td>
                                 <td className="px-4 sm:px-6 py-4 text-right font-bold text-stone-900 text-sm whitespace-nowrap">฿{(project.budget || 0).toLocaleString()}</td>
                                 <td className="px-6 py-4 text-center hidden sm:table-cell">
