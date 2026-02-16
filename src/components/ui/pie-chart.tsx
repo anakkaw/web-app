@@ -12,9 +12,10 @@ interface PieChartProps {
     data: ChartSegment[];
     size?: number;
     thickness?: number;
+    onCategoryClick?: (category: string) => void;
 }
 
-export function PieChart({ data, size = 200, thickness = 20 }: PieChartProps) {
+export function PieChart({ data, size = 200, thickness = 20, onCategoryClick }: PieChartProps) {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     const total = data.reduce((acc, curr) => acc + curr.value, 0);
@@ -27,7 +28,7 @@ export function PieChart({ data, size = 200, thickness = 20 }: PieChartProps) {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8 w-full">
             {/* Chart Section */}
             <div className="relative" style={{ width: size, height: size }}>
-                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="transform -rotate-90">
+                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="transform -rotate-90 overflow-visible">
                     <defs>
                         <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
                             <feGaussianBlur stdDeviation="3" result="coloredBlur" />
@@ -78,6 +79,7 @@ export function PieChart({ data, size = 200, thickness = 20 }: PieChartProps) {
                                 }}
                                 onMouseEnter={() => setHoveredIndex(index)}
                                 onMouseLeave={() => setHoveredIndex(null)}
+                                onClick={() => onCategoryClick && onCategoryClick(segment.label)}
                             />
                         );
                     })}
@@ -88,7 +90,7 @@ export function PieChart({ data, size = 200, thickness = 20 }: PieChartProps) {
                             <span className="text-xs text-stone-400 font-bold uppercase tracking-wider">
                                 {hoveredIndex !== null ? data[hoveredIndex].label : "รวมงบประมาณ"}
                             </span>
-                            <span className="text-xl font-black text-stone-800 tracking-tight">
+                            <span className="text-3xl lg:text-4xl font-black text-stone-800 tracking-tight drop-shadow-sm">
                                 ฿{hoveredIndex !== null ? data[hoveredIndex].value.toLocaleString(undefined, { maximumFractionDigits: 0 }) : total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                             </span>
                         </div>
@@ -104,6 +106,7 @@ export function PieChart({ data, size = 200, thickness = 20 }: PieChartProps) {
                         className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all duration-300 ${hoveredIndex === index ? 'bg-stone-100 scale-105 shadow-sm' : 'hover:bg-stone-50'} ${hoveredIndex !== null && hoveredIndex !== index ? 'opacity-40 blur-[0.5px]' : 'opacity-100'}`}
                         onMouseEnter={() => setHoveredIndex(index)}
                         onMouseLeave={() => setHoveredIndex(null)}
+                        onClick={() => onCategoryClick && onCategoryClick(segment.label)}
                     >
                         <div className="flex items-center gap-3">
                             <div className="h-3 w-3 rounded-full ring-2 ring-white shadow-sm" style={{ backgroundColor: segment.color }}></div>

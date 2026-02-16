@@ -54,7 +54,7 @@ export default function Home() {
     setTempBudget(totalAllocatedBudget.toString());
   }, [totalAllocatedBudget]);
 
-  const [sortConfig, setSortConfig] = useState<{ key: 'projectCode' | 'category' | 'budget' | 'name'; direction: 'asc' | 'desc' } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: 'projectCode' | 'category' | 'budget' | 'name'; direction: 'asc' | 'desc' } | null>({ key: 'projectCode', direction: 'asc' });
   const [filterCategory, setFilterCategory] = useState("ทั้งหมด");
   const [searchQuery, setSearchQuery] = useState("");
   const [isExporting, setIsExporting] = useState(false);
@@ -185,6 +185,16 @@ export default function Home() {
   const handleDeleteCategory = (category: string) => {
     if (confirm(`คุณต้องการลบประเภท "${category}" ใช่หรือไม่?`)) {
       deleteCategory(category);
+    }
+  };
+
+  const handleCategoryClick = (category: string) => {
+    setFilterCategory(current => current === category ? "ทั้งหมด" : category);
+
+    // Scroll to the project list
+    const projectListElement = document.getElementById('project-list');
+    if (projectListElement) {
+      projectListElement.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -439,6 +449,7 @@ export default function Home() {
                         color: colors.hex
                       };
                     })}
+                  onCategoryClick={handleCategoryClick}
                 />
               )}
             </CardContent>
@@ -446,7 +457,7 @@ export default function Home() {
         </div>
 
         {/* Recent Projects Table */}
-        <Card className="card-premium border border-stone-200 shadow-sm rounded-2xl bg-white overflow-hidden">
+        <Card id="project-list" className="card-premium border border-stone-200 shadow-sm rounded-2xl bg-white overflow-hidden">
           <CardHeader className="bg-white border-b border-stone-200 py-5 px-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <CardTitle className="flex items-center gap-2 text-lg text-stone-900 font-black tracking-tight">
