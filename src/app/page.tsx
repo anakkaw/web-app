@@ -57,7 +57,19 @@ export default function Home() {
   const [sortConfig, setSortConfig] = useState<{ key: 'projectCode' | 'category' | 'budget' | 'name'; direction: 'asc' | 'desc' } | null>({ key: 'projectCode', direction: 'asc' });
   const [filterCategory, setFilterCategory] = useState("ทั้งหมด");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [isExporting, setIsExporting] = useState(false);
+
+  // Debounce search query
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleExportCSV = () => {
@@ -112,8 +124,8 @@ export default function Home() {
     }
   };
 
-  const totalProjectBudget = projects.reduce((sum, p) => sum + p.budget, 0);
-  const remainingBudget = totalAllocatedBudget - totalProjectBudget;
+  const totalProjectBudget = useMemo(() => projects.reduce((sum, p) => sum + p.budget, 0), [projects]);
+  const remainingBudget = useMemo(() => totalAllocatedBudget - totalProjectBudget, [totalAllocatedBudget, totalProjectBudget]);
 
   const handleBudgetSave = () => {
     const amount = parseFloat(tempBudget);
@@ -146,11 +158,11 @@ export default function Home() {
   const filteredProjects = useMemo(() => {
     return sortedProjects.filter(p => {
       const matchesCategory = filterCategory === "ทั้งหมด" || (p.category || "อื่นๆ") === filterCategory;
-      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (p.projectCode && p.projectCode.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesSearch = p.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        (p.projectCode && p.projectCode.toLowerCase().includes(debouncedSearchQuery.toLowerCase()));
       return matchesCategory && matchesSearch;
     });
-  }, [sortedProjects, filterCategory, searchQuery]);
+  }, [sortedProjects, filterCategory, debouncedSearchQuery]);
 
   const requestSort = (key: 'projectCode' | 'category' | 'budget' | 'name') => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -267,7 +279,7 @@ export default function Home() {
                     onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                     className="gap-2 border-stone-200/50 text-stone-600 hover:bg-stone-50 hover:text-stone-900 font-bold h-10 px-4 rounded-xl transition-all"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2-2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 7h-9" /><path d="M14 17H5" /><circle cx="17" cy="17" r="3" /><circle cx="7" cy="7" r="3" /></svg>
                     ตั้งค่า
                   </Button>
 
@@ -323,7 +335,7 @@ export default function Home() {
           {/* Allocated Budget - Blue */}
           <Card className="relative overflow-hidden border-none shadow-xl rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white transform hover:scale-[1.01] transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><rect width="20" height="14" x="2" y="5" rx="2" /><line x1="2" x2="22" y1="10" y2="10" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M19 7h-1V6a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7Zm-4-1a2 2 0 0 1 2 2v1H5V6a2 2 0 0 1 2-2h10Zm6 10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9h18v7Z" /><path d="M16 14h.01" /></svg>
             </div>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-4 px-5 relative z-10">
               <CardTitle className="text-sm font-black text-blue-100 uppercase tracking-widest drop-shadow-md">งบ (ได้รับจัดสรร)</CardTitle>
@@ -356,7 +368,7 @@ export default function Home() {
           {/* Remaining Budget - Green/Red */}
           <Card className={`relative overflow-hidden border-none shadow-xl rounded-2xl text-white transform hover:scale-[1.01] transition-all duration-300 ${remainingBudget >= 0 ? "bg-gradient-to-br from-emerald-500 to-teal-700" : "bg-gradient-to-br from-red-500 to-rose-700"}`}>
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-1.5.3-.5.5-1 1-1.5a6.4 6.4 0 0 0-2-8Z" /></svg>
             </div>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-4 px-5 relative z-10">
               <CardTitle className="text-sm font-black text-white/90 uppercase tracking-widest drop-shadow-md">งบ (คงเหลือ)</CardTitle>
@@ -371,7 +383,7 @@ export default function Home() {
           {/* Total Projects - Orange */}
           <Card className="relative overflow-hidden border-none shadow-xl rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 text-white transform hover:scale-[1.01] transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v1h20Z" /><path d="M2 11v7a2 2 0 0 0 2 2h7" /><path d="M16 11l5 5-5 5" /><path d="M21 16H9" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /><path d="M9 14h6" /><path d="M9 10h6" /><path d="M9 18h6" /></svg>
             </div>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-4 px-5 relative z-10">
               <CardTitle className="text-sm font-black text-orange-100 uppercase tracking-widest drop-shadow-md">โครงการทั้งหมด</CardTitle>
@@ -541,34 +553,34 @@ export default function Home() {
                     <table className="w-full text-sm text-left border-collapse">
                       <thead>
                         <tr className="border-b border-stone-200 bg-stone-50/50 text-xs text-stone-500 font-bold uppercase tracking-wider">
-                          <th className="h-11 px-2 text-center w-[50px]"></th>
-                          <th onClick={() => requestSort('projectCode')} className="h-11 px-6 cursor-pointer hover:text-stone-800 transition-colors group hidden lg:table-cell">
+                          <th className="h-11 px-2 text-center w-[50px] min-w-[50px]"></th>
+                          <th onClick={() => requestSort('projectCode')} className="h-11 px-4 cursor-pointer hover:text-stone-800 transition-colors group hidden lg:table-cell w-[100px] whitespace-nowrap">
                             รหัส
                             <span className={`ml-1.5 inline-block transition-all ${sortConfig?.key === 'projectCode' ? 'opacity-100 text-orange-600 scale-110' : 'opacity-30 group-hover:opacity-100'}`}>
                               {sortConfig?.key === 'projectCode' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
                             </span>
                           </th>
-                          <th onClick={() => requestSort('name')} className="h-11 px-4 sm:px-6 cursor-pointer hover:text-stone-800 transition-colors group">
+                          <th onClick={() => requestSort('name')} className="h-11 px-4 sm:px-6 cursor-pointer hover:text-stone-800 transition-colors group min-w-[200px]">
                             ชื่อโครงการ
                             <span className={`ml-1.5 inline-block transition-all ${sortConfig?.key === 'name' ? 'opacity-100 text-orange-600 scale-110' : 'opacity-30 group-hover:opacity-100'}`}>
                               {sortConfig?.key === 'name' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
                             </span>
                           </th>
-                          <th className="h-11 px-4 sm:px-6 text-center">สถานะ</th>
-                          <th className="h-11 px-6 hidden md:table-cell text-center">วันที่</th>
-                          <th onClick={() => requestSort('budget')} className="h-11 px-4 sm:px-6 text-right cursor-pointer hover:text-stone-800 transition-colors group">
+                          <th className="h-11 px-4 sm:px-6 text-center w-[110px] whitespace-nowrap">สถานะ</th>
+                          <th className="h-11 px-6 hidden md:table-cell text-center w-[120px] whitespace-nowrap">วันที่</th>
+                          <th onClick={() => requestSort('budget')} className="h-11 px-4 sm:px-6 text-right cursor-pointer hover:text-stone-800 transition-colors group w-[140px] whitespace-nowrap">
                             งบประมาณ
                             <span className={`ml-1.5 inline-block transition-all ${sortConfig?.key === 'budget' ? 'opacity-100 text-orange-600 scale-110' : 'opacity-30 group-hover:opacity-100'}`}>
                               {sortConfig?.key === 'budget' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
                             </span>
                           </th>
-                          <th onClick={() => requestSort('category')} className="h-11 px-6 text-center cursor-pointer hover:text-stone-800 transition-colors group hidden sm:table-cell">
+                          <th onClick={() => requestSort('category')} className="h-11 px-6 text-center cursor-pointer hover:text-stone-800 transition-colors group hidden sm:table-cell w-[140px] whitespace-nowrap">
                             หมวดหมู่
                             <span className={`ml-1.5 inline-block transition-all ${sortConfig?.key === 'category' ? 'opacity-100 text-orange-600 scale-110' : 'opacity-30 group-hover:opacity-100'}`}>
                               {sortConfig?.key === 'category' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↕'}
                             </span>
                           </th>
-                          <th className="h-11 px-4 sm:px-6 text-center">
+                          <th className="h-11 px-4 sm:px-6 text-center w-[100px] whitespace-nowrap">
                             {userRole !== 'reader' && "จัดการ"}
                           </th>
                         </tr>
@@ -591,10 +603,10 @@ export default function Home() {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                                   </Button>
                                 </td>
-                                <td className="px-6 py-4 font-mono font-medium text-stone-400 text-xs hidden lg:table-cell">#{project.projectCode || "N/A"}</td>
+                                <td className="px-6 py-4 font-mono font-medium text-stone-400 text-xs hidden lg:table-cell whitespace-nowrap">#{project.projectCode || "N/A"}</td>
                                 <td className="px-4 sm:px-6 py-4 font-bold text-stone-900 text-sm">{project.name}</td>
                                 <td className="px-4 sm:px-6 py-4 text-center">
-                                  <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider
+                                  <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider whitespace-nowrap
                                   ${!project.progressLevel || project.progressLevel === 'Not Start' ? 'bg-stone-100 text-stone-600' : ''}
                                   ${project.progressLevel === 'Planning' ? 'bg-indigo-50 text-indigo-700' : ''}
                                   ${project.progressLevel === 'In Progress' ? 'bg-blue-50 text-blue-700' : ''}
@@ -614,7 +626,7 @@ export default function Home() {
                                   {project.activityDate ? new Date(project.activityDate).toLocaleDateString('th-TH', { year: '2-digit', month: 'short', day: 'numeric' }) : '-'}
                                 </td>
                                 <td className="px-4 sm:px-6 py-4 text-right font-bold text-stone-900 text-sm whitespace-nowrap">฿{(project.budget || 0).toLocaleString()}</td>
-                                <td className="px-6 py-4 text-center hidden sm:table-cell">
+                                <td className="px-6 py-4 text-center hidden sm:table-cell whitespace-nowrap">
                                   <span className="inline-flex items-center rounded-md px-2 py-1 text-[10px] font-semibold bg-stone-100 text-stone-600 border border-stone-200">
                                     {project.category || "อื่นๆ"}
                                   </span>
