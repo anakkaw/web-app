@@ -36,7 +36,8 @@ export interface Agency {
     projects: Project[];
     categories: string[];
     totalAllocatedBudget: number;
-    passcode?: string; // New: Per-agency reader passcode
+    passcode?: string;
+    isPublished?: boolean; // Controls visibility in reader mode (default: true)
 }
 
 interface ProjectContextType {
@@ -69,6 +70,7 @@ interface ProjectContextType {
     logout: () => void;
     isAuthenticated: boolean;
     updateAgencyPasscode: (agencyId: string, passcode: string) => void;
+    toggleAgencyPublished: (agencyId: string) => void;
     isLoaded: boolean;
 }
 
@@ -489,6 +491,12 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         ));
     };
 
+    const toggleAgencyPublished = (agencyId: string) => {
+        setAgencies((prev) => prev.map(a =>
+            a.id === agencyId ? { ...a, isPublished: a.isPublished === false ? true : false } : a
+        ));
+    };
+
     const loginAsReader = (passcode: string, agencyId?: string): boolean => {
         // 1. If agencyId is provided, check specifically that agency
         if (agencyId) {
@@ -563,6 +571,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             logout,
             isAuthenticated: userRole !== 'guest',
             updateAgencyPasscode,
+            toggleAgencyPublished,
             loginAsDemoAdmin,
             isLoaded,
         }}>
