@@ -195,8 +195,15 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
 
                 setSession(session);
                 if (session) {
-                    setUserRole('admin');
-                    loadFromSupabase(session.user.id);
+                    if (typeof window !== 'undefined' && localStorage.getItem(DEMO_MODE_KEY) === 'true') {
+                        // Demo mode — keep local data
+                    } else {
+                        setUserRole('admin');
+                        loadFromSupabase(session.user.id);
+                    }
+                } else {
+                    // No session — fetch agencies from cloud for guest/reader
+                    loadAgenciesPublicly();
                 }
 
                 const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_event, session) => {
