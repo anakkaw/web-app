@@ -56,7 +56,18 @@ export function Navbar() {
                         {/* Cloud/Auth Controls */}
                         {session || userRole !== 'guest' ? (
                             <div className="flex items-center gap-3 pl-2">
-                                {/* Sync button removed as per user request */}
+                                {/* Mobile role badge */}
+                                <div className="sm:hidden">
+                                    {userRole === 'reader' ? (
+                                        <div className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 text-[10px] font-black uppercase tracking-wider border border-orange-200">
+                                            Reader
+                                        </div>
+                                    ) : (
+                                        <div className="px-2 py-0.5 rounded bg-stone-100 text-stone-600 text-[10px] font-black uppercase tracking-wider border border-stone-200">
+                                            Admin
+                                        </div>
+                                    )}
+                                </div>
 
                                 <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-stone-200">
                                     <div className="flex flex-col items-end mr-2">
@@ -69,7 +80,7 @@ export function Navbar() {
                                                 Admin
                                             </span>
                                         )}
-                                        <span className="text-xs font-bold text-stone-800 max-w-[100px] truncate">
+                                        <span className="text-xs font-bold text-stone-800 max-w-[160px] truncate">
                                             {session?.user?.email || (userRole === 'admin' ? 'Demo Admin' : 'Guest Access')}
                                         </span>
                                     </div>

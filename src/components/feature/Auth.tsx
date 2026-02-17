@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Logo } from "@/components/ui/logo"
 import { Button } from "@/components/ui/button"
@@ -20,6 +20,14 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess?: () => void }) 
     const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
     const [selectedAgencyId, setSelectedAgencyId] = useState<string | null>(null)
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null)
+
+    // Auto-dismiss messages after 4 seconds
+    useEffect(() => {
+        if (message) {
+            const timer = setTimeout(() => setMessage(null), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
 
     const handleReaderLogin = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -273,9 +281,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess?: () => void }) 
                         )}
                     </CardContent>
                 </Tabs>
-                <div className="p-4 text-center">
-                    <p className="text-xs text-stone-400 font-mono">v2.0 (Agency Selection Enabled)</p>
-                </div>
+
             </Card>
         </div >
     )

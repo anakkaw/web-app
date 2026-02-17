@@ -8,14 +8,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-
-type WBSItem = {
-    id: string;
-    description: string;
-    quantity: number;
-    unit: string;
-    unitPrice: number;
-};
+import type { WBSItem } from "@/contexts/ProjectContext";
 
 export function WBS({
     items,

@@ -20,9 +20,9 @@ export default function AuthPage() {
     }, [router])
 
     return (
-        <div className="min-h-screen bg-background font-sans">
+        <div className="min-h-screen bg-stone-50 font-sans">
             <Navbar />
-            <main className="app-container px-6 py-12 lg:px-10 flex items-center justify-center min-h-[calc(100vh-64px)]">
+            <main className="container mx-auto px-4 py-12 lg:px-10 flex items-center justify-center min-h-[calc(100vh-64px)] animate-page-enter">
                 <Auth />
             </main>
         </div>

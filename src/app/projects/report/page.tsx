@@ -46,16 +46,24 @@ function ReportContent() {
     const remainingBudget = project.budget - totalWBSAmount;
 
     return (
-        <div className="min-h-screen bg-white text-stone-900 p-8 print:p-0">
+        <div className="min-h-screen bg-stone-50 text-stone-900 p-8 print:p-0 print:bg-white pb-20">
             {/* Print Controls - Hidden when printing */}
             <div className="max-w-4xl mx-auto mb-8 flex justify-between items-center print:hidden">
-                <Link href="/" className="flex items-center gap-2 text-stone-500 hover:text-stone-900 font-bold">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                    กลับ
-                </Link>
+                <div className="flex items-center gap-4">
+                    <Link href="/" className="flex items-center gap-2 text-stone-500 hover:text-orange-600 font-bold transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                        หน้าหลัก
+                    </Link>
+                    {projectId && (
+                        <Link href={`/projects/detail?id=${projectId}`} className="flex items-center gap-1.5 text-stone-400 hover:text-orange-600 font-bold transition-colors text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
+                            แก้ไขโครงการ
+                        </Link>
+                    )}
+                </div>
                 <Button
                     onClick={() => window.print()}
-                    className="bg-stone-900 hover:bg-black text-white font-bold gap-2"
+                    className="bg-stone-900 hover:bg-black text-white font-black gap-2 h-11 px-6 rounded-xl shadow-lg shadow-stone-900/10 transition-all active:scale-95"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
                     พิมพ์รายงาน
@@ -63,7 +71,7 @@ function ReportContent() {
             </div>
 
             {/* Report Content */}
-            <div className="max-w-4xl mx-auto border border-stone-200 rounded-none shadow-none print:border-none print:w-full">
+            <div className="max-w-4xl mx-auto bg-white border border-stone-200 rounded-xl shadow-sm overflow-hidden print:border-none print:shadow-none print:rounded-none print:w-full">
 
                 {/* Header */}
                 <div className="bg-stone-50 border-b border-stone-200 p-8 print:bg-white print:border-b-2 print:border-stone-900">
@@ -108,7 +116,7 @@ function ReportContent() {
                 {/* Financial Summary */}
                 <div className="p-8 bg-blue-50/30 border-b border-stone-200 print:bg-stone-50">
                     <h3 className="text-sm font-black text-stone-500 uppercase tracking-widest mb-6 border-b border-stone-200 pb-2">สรุปงบประมาณ</h3>
-                    <div className="grid grid-cols-3 gap-6 text-center">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center">
                         <div className="p-4 bg-white rounded-xl border border-stone-100 shadow-sm print:border-stone-300 print:shadow-none">
                             <div className="text-xs font-bold text-stone-400 mb-1">งบประมาณโครงการ</div>
                             <div className="text-2xl font-black text-stone-900">฿{project.budget.toLocaleString()}</div>

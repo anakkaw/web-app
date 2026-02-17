@@ -21,8 +21,6 @@ export function PieChart({ data, size = 200, thickness = 20, onCategoryClick }: 
     const total = data.reduce((acc, curr) => acc + curr.value, 0);
     let currentAngle = 0;
 
-    // Explicitly defined colors for specific categories if passed, or fallback
-    // This matches the app's color logic indirectly, but the data prop should carry the color.
 
     return (
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8 w-full">
@@ -44,13 +42,8 @@ export function PieChart({ data, size = 200, thickness = 20, onCategoryClick }: 
                         const dashArray = percentage * Math.PI * (size - thickness);
                         const circumference = Math.PI * (size - thickness);
 
-                        // Calculate stroke-dasharray (visible part, hidden part)
                         const strokeDasharray = `${dashArray} ${circumference - dashArray}`;
 
-                        // Calculate stroke-dashoffset (starting position)
-                        const strokeDashoffset = -currentAngle * (Math.PI * (size - thickness));
-
-                        // Update current angle for next segment (0 to 1 scale)
                         currentAngle += percentage;
 
                         const radius = (size - thickness) / 2;
@@ -65,13 +58,12 @@ export function PieChart({ data, size = 200, thickness = 20, onCategoryClick }: 
                                 cy={center}
                                 r={radius}
                                 fill="transparent"
-                                stroke={segment.color} // Use the color passed from data
+                                stroke={segment.color}
                                 strokeWidth={isHovered ? thickness + 8 : thickness}
                                 strokeDasharray={strokeDasharray}
-                                strokeDashoffset={strokeDashoffset} // Note: offset is usually negative or handled via rotate
                                 className="transition-all duration-300 ease-out cursor-pointer"
                                 style={{
-                                    strokeDashoffset: - (currentAngle - percentage) * Math.PI * (size - thickness), // Correct offset calculation
+                                    strokeDashoffset: -(currentAngle - percentage) * Math.PI * (size - thickness),
                                     transformOrigin: 'center',
                                     opacity: isDimmed ? 0.3 : 1,
                                     filter: isHovered ? 'url(#glow)' : 'none',
@@ -83,19 +75,16 @@ export function PieChart({ data, size = 200, thickness = 20, onCategoryClick }: 
                             />
                         );
                     })}
-                    {/* Summary Center Text */}
-                    {/* We need to reverse the rotation for text */}
-                    <foreignObject x="0" y="0" width={size} height={size} className="transform rotate-90 override-rotate">
-                        <div className="h-full w-full flex flex-col items-center justify-center text-center pointer-events-none">
-                            <span className="text-xs text-stone-400 font-bold uppercase tracking-wider">
-                                {hoveredIndex !== null ? data[hoveredIndex].label : "รวมงบประมาณ"}
-                            </span>
-                            <span className="text-3xl lg:text-4xl font-black text-stone-800 tracking-tight drop-shadow-sm">
-                                ฿{hoveredIndex !== null ? data[hoveredIndex].value.toLocaleString(undefined, { maximumFractionDigits: 0 }) : total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                            </span>
-                        </div>
-                    </foreignObject>
                 </svg>
+                {/* Summary Center Text - Moved outside SVG to avoid rotation issues */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                    <span className="text-xs text-stone-400 font-bold uppercase tracking-wider">
+                        {hoveredIndex !== null ? data[hoveredIndex].label : "รวมงบประมาณ"}
+                    </span>
+                    <span className="text-3xl lg:text-4xl font-black text-stone-800 tracking-tight drop-shadow-sm">
+                        ฿{hoveredIndex !== null ? data[hoveredIndex].value.toLocaleString(undefined, { maximumFractionDigits: 0 }) : total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    </span>
+                </div>
             </div>
 
             {/* Legend Section */}

@@ -64,7 +64,7 @@ export function AgencyModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 p-4 backdrop-blur-sm">
-            <Card className="w-full max-w-lg relative shadow-2xl border-stone-300">
+            <Card className="w-full max-w-lg relative shadow-2xl border-stone-300 animate-in zoom-in-95 fade-in duration-200">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -127,7 +127,7 @@ export function AgencyModal({
                                                 onChange={(e) => setEditingPasscodeValue(e.target.value)}
                                                 autoFocus
                                             />
-                                            <Button size="icon" className="h-8 w-8 bg-blue-600 hover:bg-blue-700 text-white" onClick={() => handlePasscodeSave(agency.id)}>
+                                            <Button size="icon" className="h-8 w-8 bg-orange-600 hover:bg-orange-700 text-white" onClick={() => handlePasscodeSave(agency.id)}>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
                                             </Button>
                                         </div>
@@ -153,7 +153,7 @@ export function AgencyModal({
                                                 variant="ghost"
                                                 size="icon"
                                                 title="Set Passcode"
-                                                className="h-9 w-9 text-stone-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-all"
+                                                className="h-9 w-9 text-stone-400 hover:text-orange-600 opacity-0 group-hover:opacity-100 transition-all"
                                                 onClick={() => {
                                                     setEditingPasscodeId(agency.id);
                                                     setEditingPasscodeValue(agency.passcode || "");

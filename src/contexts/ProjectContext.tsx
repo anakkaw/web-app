@@ -238,7 +238,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
 
     function loadFromLocalStorage() {
         try {
-            console.log("Loading from local storage...");
+
             const storedAgencies = localStorage.getItem(AGENCIES_STORAGE_KEY);
             const storedCurrentId = localStorage.getItem(CURRENT_AGENCY_ID_KEY);
 
@@ -285,13 +285,10 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
             console.error("Error loading from local storage:", e);
         } finally {
-            console.log("Setting isLoaded to true");
+
             setIsLoaded(true);
         }
     }
-
-
-
 
     // Save data whenever it changes (Debounced)
     useEffect(() => {
