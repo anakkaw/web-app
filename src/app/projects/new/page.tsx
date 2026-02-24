@@ -21,7 +21,7 @@ export default function NewProject() {
 
     const [projectCode, setProjectCode] = useState("");
     const [name, setName] = useState("");
-    const [budget] = useState("");
+    const [budget, setBudget] = useState("");
     const [formData, setFormData] = useState({
         owner: "",
         location: "",
@@ -99,6 +99,19 @@ export default function NewProject() {
                                         required
                                     />
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="budget" className="text-stone-700 font-bold ml-1">งบประมาณ (บาท)</Label>
+                                <Input
+                                    id="budget"
+                                    type="number"
+                                    placeholder="เช่น 1000000"
+                                    value={budget}
+                                    onChange={(e) => setBudget(e.target.value)}
+                                    className="h-11 border-stone-200 focus:border-stone-800 focus:ring-stone-900/5 font-semibold rounded-lg"
+                                    min="0"
+                                />
                             </div>
 
                             <div className="space-y-2">

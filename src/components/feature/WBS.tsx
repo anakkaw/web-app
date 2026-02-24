@@ -58,22 +58,24 @@ export function WBS({
     };
 
     const handleExportCSV = () => {
-        const csvContent =
-            "data:text/csv;charset=utf-8," +
-            "รายการ,ปริมาณ,หน่วย,ราคาต่อหน่วย,ราคารวม\n" +
-            items
-                .map(
-                    (item) =>
-                        `${item.description},${item.quantity},${item.unit},${item.unitPrice},${item.quantity * item.unitPrice}`
-                )
-                .join("\n");
-        const encodedUri = encodeURI(csvContent);
+        const rows = [
+            "รายการ,ปริมาณ,หน่วย,ราคาต่อหน่วย,ราคารวม",
+            ...items.map(
+                (item) =>
+                    `${item.description},${item.quantity},${item.unit},${item.unitPrice},${item.quantity * item.unitPrice}`
+            ),
+        ].join("\n");
+
+        // Add BOM for proper Thai character display in Excel
+        const blob = new Blob(["\uFEFF" + rows], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
+        link.setAttribute("href", url);
         link.setAttribute("download", "wbs_export.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     };
 
     return (

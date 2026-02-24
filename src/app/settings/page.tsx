@@ -11,7 +11,7 @@ import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
 export default function SettingsPage() {
-    const { userRole, agencies, updateAgencyPasscode, toggleAgencyPublished, isAuthenticated } = useProjects();
+    const { userRole, agencies, updateAgencyPasscode, toggleAgencyPublished, isAuthenticated, session } = useProjects();
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loadingPassword, setLoadingPassword] = useState(false);
@@ -119,8 +119,8 @@ export default function SettingsPage() {
                                             <button
                                                 onClick={() => toggleAgencyPublished(agency.id)}
                                                 className={`inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all ${agency.isPublished === false
-                                                        ? 'bg-stone-200 text-stone-500 hover:bg-emerald-100 hover:text-emerald-700'
-                                                        : 'bg-emerald-100 text-emerald-700 hover:bg-stone-200 hover:text-stone-500'
+                                                    ? 'bg-stone-200 text-stone-500 hover:bg-emerald-100 hover:text-emerald-700'
+                                                    : 'bg-emerald-100 text-emerald-700 hover:bg-stone-200 hover:text-stone-500'
                                                     }`}
                                             >
                                                 {agency.isPublished === false ? (
@@ -177,58 +177,61 @@ export default function SettingsPage() {
                         </CardContent>
                     </Card>
 
-                    {/* Admin Password Settings */}
-                    <Card className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden">
-                        <CardHeader className="bg-white border-b border-stone-100 px-6 py-5">
-                            <CardTitle className="text-lg font-black text-stone-800 flex items-center gap-2">
-                                <span className="w-1.5 h-6 bg-stone-800 rounded-full inline-block"></span>
-                                เปลี่ยนรหัสผ่านผู้ดูแลระบบ (Admin)
-                            </CardTitle>
-                            <CardDescription className="text-stone-500 mt-1 font-medium pl-3.5">
-                                เปลี่ยนรหัสผ่านสำหรับบัญชีผู้ดูแลระบบของคุณ
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-6">
-                            <form onSubmit={handleUpdatePassword} className="space-y-5 max-w-md">
-                                <div className="space-y-2">
-                                    <Label htmlFor="newPassword" className="text-stone-700 font-bold">รหัสผ่านใหม่</Label>
-                                    <Input
-                                        id="newPassword"
-                                        type="password"
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        className="h-11 font-bold border-stone-200 focus:border-stone-800 rounded-lg"
-                                        placeholder="อย่างน้อย 6 ตัวอักษร"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="confirmPassword" className="text-stone-700 font-bold">ยืนยันรหัสผ่านใหม่</Label>
-                                    <Input
-                                        id="confirmPassword"
-                                        type="password"
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="h-11 font-bold border-stone-200 focus:border-stone-800 rounded-lg"
-                                        placeholder="กรอกรหัสผ่านใหม่อีกครั้ง"
-                                    />
-                                </div>
-                                <div className="pt-2">
-                                    <Button
-                                        type="submit"
-                                        disabled={loadingPassword}
-                                        className="bg-stone-900 hover:bg-black text-white font-black h-11 px-8 rounded-xl w-full sm:w-auto shadow-lg shadow-stone-900/10 transition-all active:scale-95"
-                                    >
-                                        {loadingPassword ? (
-                                            <>
-                                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                                กำลังบันทึก...
-                                            </>
-                                        ) : "เปลี่ยนรหัสผ่าน"}
-                                    </Button>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
+
+                    {/* Admin Password Settings - only for real Supabase sessions, not Demo Admin */}
+                    {session && (
+                        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden">
+                            <CardHeader className="bg-white border-b border-stone-100 px-6 py-5">
+                                <CardTitle className="text-lg font-black text-stone-800 flex items-center gap-2">
+                                    <span className="w-1.5 h-6 bg-stone-800 rounded-full inline-block"></span>
+                                    เปลี่ยนรหัสผ่านผู้ดูแลระบบ (Admin)
+                                </CardTitle>
+                                <CardDescription className="text-stone-500 mt-1 font-medium pl-3.5">
+                                    เปลี่ยนรหัสผ่านสำหรับบัญชีผู้ดูแลระบบของคุณ
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-6">
+                                <form onSubmit={handleUpdatePassword} className="space-y-5 max-w-md">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="newPassword" className="text-stone-700 font-bold">รหัสผ่านใหม่</Label>
+                                        <Input
+                                            id="newPassword"
+                                            type="password"
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            className="h-11 font-bold border-stone-200 focus:border-stone-800 rounded-lg"
+                                            placeholder="อย่างน้อย 6 ตัวอักษร"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="confirmPassword" className="text-stone-700 font-bold">ยืนยันรหัสผ่านใหม่</Label>
+                                        <Input
+                                            id="confirmPassword"
+                                            type="password"
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            className="h-11 font-bold border-stone-200 focus:border-stone-800 rounded-lg"
+                                            placeholder="กรอกรหัสผ่านใหม่อีกครั้ง"
+                                        />
+                                    </div>
+                                    <div className="pt-2">
+                                        <Button
+                                            type="submit"
+                                            disabled={loadingPassword}
+                                            className="bg-stone-900 hover:bg-black text-white font-black h-11 px-8 rounded-xl w-full sm:w-auto shadow-lg shadow-stone-900/10 transition-all active:scale-95"
+                                        >
+                                            {loadingPassword ? (
+                                                <>
+                                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                    กำลังบันทึก...
+                                                </>
+                                            ) : "เปลี่ยนรหัสผ่าน"}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
 
                 {message && (

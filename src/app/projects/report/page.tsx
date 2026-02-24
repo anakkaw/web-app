@@ -41,6 +41,13 @@ function ReportContent() {
         });
     };
 
+    const progressLabelMap: Record<string, string> = {
+        'Not Start': 'ยังไม่เริ่ม',
+        'Planning': 'วางแผน',
+        'In Progress': 'กำลังดำเนินการ',
+        'Done': 'เสร็จสิ้น',
+    };
+
     const totalWBSAmount = (project.wbs || []).reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
     const budgetUsagePercent = project.budget > 0 ? (totalWBSAmount / project.budget) * 100 : 0;
     const remainingBudget = project.budget - totalWBSAmount;
@@ -83,7 +90,7 @@ function ReportContent() {
                         <div className="text-right">
                             <div className="text-sm font-bold text-stone-400 uppercase tracking-widest">สถานะปัจจุบัน</div>
                             <div className="text-xl font-black text-orange-600 border px-3 py-1 rounded-lg border-orange-200 bg-orange-50 print:border-stone-900 print:bg-transparent print:text-stone-900 inline-block mt-1">
-                                {project.progressLevel}
+                                {progressLabelMap[project.progressLevel] || project.progressLevel}
                             </div>
                         </div>
                     </div>

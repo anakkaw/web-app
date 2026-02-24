@@ -344,6 +344,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
             categories: defaultCategories,
             totalAllocatedBudget: 100000000,
             passcode: '9999', // Default passcode for new agencies
+            isPublished: true, // Visible to readers by default
         };
         setAgencies((prev) => [...prev, newAgency]);
         setCurrentAgencyId(newAgency.id);
@@ -500,7 +501,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
 
     const toggleAgencyPublished = (agencyId: string) => {
         setAgencies((prev) => prev.map(a =>
-            a.id === agencyId ? { ...a, isPublished: a.isPublished === false ? true : false } : a
+            a.id === agencyId ? { ...a, isPublished: a.isPublished !== false ? false : true } : a
         ));
     };
 
